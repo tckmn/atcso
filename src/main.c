@@ -6,7 +6,7 @@
 // utility types
 typedef struct { int x; int y; } XY;
 int isNull(XY xy) { return xy.x < 0 || xy.y < 0; }
-typedef enum { UP, RIGHT, DOWN, LEFT } Direction;
+typedef enum { UP = 1, RIGHT = 2, DOWN = 4, LEFT = 8 } Direction;
 
 
 // types for storing global data
@@ -16,10 +16,18 @@ typedef struct {
 } Airport;
 
 typedef struct {
+    XY xy;
+    Direction dir;
+    char name;
+    // TODO fuel, target, speed, altitude, etc.
+} Plane;
+
+typedef struct {
     // these are arrays terminated by isNull(xy)
     XY *exits;
     XY *beacons;
     Airport *airports;
+    Plane *planes;
 } AtcsoData;
 
 
@@ -70,6 +78,10 @@ void mainloop() {
     data.airports[0] = (Airport) {{20, 15}, UP};
     data.airports[1] = (Airport) {{20, 18}, RIGHT};
     data.airports[2] = (Airport) {{-1, -1}, 0};
+
+    data.planes = malloc(2 * sizeof(Plane));
+    data.planes[0] = (Plane) {{0, 0}, RIGHT | DOWN, 'A'};
+    data.planes[1] = (Plane) {{-1, -1}, 0, 0};
 
     // get all our windows
     refresh();
@@ -137,11 +149,13 @@ WINDOW *createRadarWin(AtcsoData *data) {
     // add the airports
     Airport *airport = data->airports;
     for (int i = 0; !isNull(airport->xy); ++airport, ++i) {
-        mvwaddch(radarWin, airport->xy.y, 2 * airport->xy.x, "^>v<"[airport->dir]);
+        mvwaddch(radarWin, airport->xy.y, 2 * airport->xy.x,
+                "_^>_v___<"[airport->dir]);
         waddch(radarWin, '0' + i);
     }
 
-    wrefresh(radarWin);
+    updateRadarWin(data, radarWin);
+
     return radarWin;
 }
 
@@ -149,5 +163,22 @@ WINDOW *createRadarWin(AtcsoData *data) {
  * Update and refresh the radar window.
  */
 void updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
-    // TODO do stuff
+    for (Plane *p = data->planes; !isNull(p->xy); ++p) {
+        if (p->xy.y > 0 && p->xy.y < 20 && p->xy.x > 0 && p->xy.x < 29) {
+            mvwaddstr(radarWin, p->xy.y, 2 * p->xy.x, ". ");
+            // TODO check for beacons, airports; redraw and do actions
+        } else {
+            // TODO the plane either exited or crashed
+        }
+
+        if (p->dir & UP) --p->xy.y;
+        if (p->dir & RIGHT) ++p->xy.x;
+        if (p->dir & DOWN) ++p->xy.y;
+        if (p->dir & LEFT) --p->xy.x;
+
+        mvwaddch(radarWin, p->xy.y, 2 * p->xy.x, p->name);
+        waddch(radarWin, '7');
+    }
+
+    wrefresh(radarWin);
 }
