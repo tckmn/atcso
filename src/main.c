@@ -80,7 +80,7 @@ void mainloop() {
     data.airports[2] = (Airport) {{-1, -1}, 0};
 
     data.planes = malloc(2 * sizeof(Plane));
-    data.planes[0] = (Plane) {{0, 0}, RIGHT | DOWN, 'A'};
+    data.planes[0] = (Plane) {{1, 1}, RIGHT | DOWN, 'A'};
     data.planes[1] = (Plane) {{-1, -1}, 0, 0};
 
     // get all our windows
@@ -168,13 +168,15 @@ void updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
             mvwaddstr(radarWin, p->xy.y, 2 * p->xy.x, ". ");
             // TODO check for beacons, airports; redraw and do actions
         } else {
-            // TODO the plane either exited or crashed
+            // TODO this is impossible... right?
         }
 
         if (p->dir & UP) --p->xy.y;
         if (p->dir & RIGHT) ++p->xy.x;
         if (p->dir & DOWN) ++p->xy.y;
         if (p->dir & LEFT) --p->xy.x;
+
+        // TODO check whether plane crashed/exited
 
         mvwaddch(radarWin, p->xy.y, 2 * p->xy.x, p->name);
         waddch(radarWin, '7');
