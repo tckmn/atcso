@@ -28,6 +28,8 @@ typedef struct {
     XY *beacons;
     Airport *airports;
     Plane *planes;
+
+    double newPlaneRate;
 } AtcsoData;
 
 
@@ -44,6 +46,7 @@ int main(int argc, char **argv) {
     raw();                  // Disable line buffering
     noecho();               // Don't show things the user is typing
     nodelay(stdscr, TRUE);  // Non-blocking getch()
+    srand(time(NULL));      // Seed RNG
 
     mainloop();             // Start the game!
 
@@ -81,6 +84,8 @@ void mainloop() {
 
     data.planes = malloc(1 * sizeof(Plane));
     data.planes[0] = (Plane) {{-1, -1}, 0, 0};
+
+    data.newPlaneRate = 0.1;
 
     // get all our windows
     refresh();
@@ -182,7 +187,7 @@ void updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
     }
 
     // TODO rand check, just... moar randomness
-    if (true) {
+    if (rand() < RAND_MAX * data->newPlaneRate) {
         data->planes = realloc(data->planes, (nPlanes + 2) * sizeof(Plane));
         data->planes[nPlanes] = (Plane) {{1, 1}, RIGHT | DOWN, 'A'};
         data->planes[nPlanes + 1] = (Plane) {{-1, -1}, 0, '\0'};
