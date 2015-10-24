@@ -18,6 +18,7 @@ typedef struct {
 typedef struct {
     // these are arrays terminated by isNull(xy)
     XY *exits;
+    XY *beacons;
     Airport *airports;
 } AtcsoData;
 
@@ -59,6 +60,11 @@ void mainloop() {
     data.exits[6] = (XY) {0, 7};
     data.exits[7] = (XY) {0, 0};
     data.exits[8] = (XY) {-1, -1};
+
+    data.beacons = malloc(3 * sizeof(XY));
+    data.beacons[0] = (XY) {12, 7};
+    data.beacons[1] = (XY) {12, 17};
+    data.beacons[2] = (XY) {-1, -1};
 
     data.airports = malloc(3 * sizeof(Airport));
     data.airports[0] = (Airport) {{20, 15}, UP};
@@ -119,6 +125,13 @@ WINDOW *createRadarWin(AtcsoData *data) {
     XY *xy = data->exits;
     for (int i = 0; !isNull(*xy); ++xy, ++i) {
         mvwaddch(radarWin, xy->y, 2 * xy->x, '0' + i);
+    }
+
+    // add the beacons
+    xy = data->beacons;
+    for (int i = 0; !isNull(*xy); ++xy, ++i) {
+        mvwaddch(radarWin, xy->y, 2 * xy->x, '*');
+        waddch(radarWin, '0' + i);
     }
 
     // add the airports
