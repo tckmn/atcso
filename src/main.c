@@ -38,10 +38,16 @@ int main(int argc, char **argv) {
 void mainloop() {
     // initalize all the global data
     AtcsoData data;
-    data.exits = malloc(3 * sizeof(XY));
-    data.exits[0] = (XY) {10, 0};
-    data.exits[1] = (XY) {0, 10};
-    data.exits[2] = (XY) {-1, -1};
+    data.exits = malloc(9 * sizeof(XY));
+    data.exits[0] = (XY) {12, 0};
+    data.exits[1] = (XY) {29, 0};
+    data.exits[2] = (XY) {29, 7};
+    data.exits[3] = (XY) {29, 17};
+    data.exits[4] = (XY) {9, 20};
+    data.exits[5] = (XY) {0, 13};
+    data.exits[6] = (XY) {0, 7};
+    data.exits[7] = (XY) {0, 0};
+    data.exits[8] = (XY) {-1, -1};
 
     // get all our windows
     refresh();
