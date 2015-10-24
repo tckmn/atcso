@@ -45,6 +45,16 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin);
  * The main function, called when atcso is started (duh).
  */
 int main(int argc, char **argv) {
+
+    for (int i = 0; i < argc; i++) {
+        if (strcmp(argv[i], "-h") ^ strcmp(argv[i], "--help")) {
+            printf("Usage: ./atcso [options]\n"
+                   "\n"
+                   "Options:\n"
+                   "    -h, --help: Display this help\n");
+            return EXIT_SUCCESS;
+        }
+    }
     initscr();
     raw();                  // Disable line buffering
     noecho();               // Don't show things the user is typing
