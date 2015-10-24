@@ -9,7 +9,7 @@ bin/%.o: src/%.c $(HEADERS)
 	gcc -Wall -c $< -o $@
 
 bin/atcso: $(OBJECTS)
-	gcc -Wall -lncurses $^ -o $@
+	gcc -Wall $^ -o $@ -lncurses
 
 clean:
 	-rm -f bin/*
