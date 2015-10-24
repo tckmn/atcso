@@ -164,19 +164,18 @@ WINDOW *createRadarWin(AtcsoData *data) {
  */
 void updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
     for (Plane *p = data->planes; !isNull(p->xy); ++p) {
-        if (p->xy.y > 0 && p->xy.y < 20 && p->xy.x > 0 && p->xy.x < 29) {
-            mvwaddstr(radarWin, p->xy.y, 2 * p->xy.x, ". ");
-            // TODO check for beacons, airports; redraw and do actions
-        } else {
-            // TODO this is impossible... right?
-        }
+        mvwaddstr(radarWin, p->xy.y, 2 * p->xy.x, ". ");
+        // TODO check for beacons, airports; redraw and do actions
 
         if (p->dir & UP) --p->xy.y;
         if (p->dir & RIGHT) ++p->xy.x;
         if (p->dir & DOWN) ++p->xy.y;
         if (p->dir & LEFT) --p->xy.x;
 
-        // TODO check whether plane crashed/exited
+        if ((p->xy.y == 0 || p->xy.y == 20) &&
+                (p->xy.x == 0 || p->xy.x == 29)) {
+            // TODO plane has either exited or crashed
+        }
 
         mvwaddch(radarWin, p->xy.y, 2 * p->xy.x, p->name);
         waddch(radarWin, '7');
