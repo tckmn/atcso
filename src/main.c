@@ -116,9 +116,16 @@ WINDOW *createRadarWin(AtcsoData *data) {
     waddch(radarWin, ' ');
 
     // add the exits
-    XY *p = data->exits;
-    for (int i = 0; !isNull(*p); ++p, ++i) {
-        mvwaddch(radarWin, p->y, 2 * p->x, '0' + i);
+    XY *xy = data->exits;
+    for (int i = 0; !isNull(*xy); ++xy, ++i) {
+        mvwaddch(radarWin, xy->y, 2 * xy->x, '0' + i);
+    }
+
+    // add the airports
+    Airport *airport = data->airports;
+    for (int i = 0; !isNull(airport->xy); ++airport, ++i) {
+        mvwaddch(radarWin, airport->xy.y, 2 * airport->xy.x, "^>v<"[airport->dir]);
+        waddch(radarWin, '0' + i);
     }
 
     wrefresh(radarWin);
