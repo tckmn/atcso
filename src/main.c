@@ -193,22 +193,10 @@ void updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
 
         XY entryCoords = data->exits[rand() % nExits];
         Direction entryDir = 0;
-        if (entryCoords.y == 0) {
-            entryCoords.y = 1;
-            entryDir |= DOWN;
-        }
-        if (entryCoords.y == 20) {
-            entryCoords.y = 19;
-            entryDir |= UP;
-        }
-        if (entryCoords.x == 0) {
-            entryCoords.x = 1;
-            entryDir |= RIGHT;
-        }
-        if (entryCoords.x == 29) {
-            entryCoords.x = 28;
-            entryDir |= LEFT;
-        }
+        if (entryCoords.y == 0)  { entryCoords.y = 1;  entryDir |= DOWN;  }
+        if (entryCoords.y == 20) { entryCoords.y = 19; entryDir |= UP;    }
+        if (entryCoords.x == 0)  { entryCoords.x = 1;  entryDir |= RIGHT; }
+        if (entryCoords.x == 29) { entryCoords.x = 28; entryDir |= LEFT;  }
 
         data->planes = realloc(data->planes, (nPlanes + 2) * sizeof(Plane));
         data->planes[nPlanes] = (Plane) {entryCoords, entryDir,
