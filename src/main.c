@@ -38,7 +38,7 @@ typedef struct {
 
 void mainloop();
 WINDOW *createRadarWin(AtcsoData *data);
-void updateRadarWin(AtcsoData *data, WINDOW *radarWin);
+bool updateRadarWin(AtcsoData *data, WINDOW *radarWin);
 
 
 /**
@@ -103,7 +103,10 @@ void mainloop() {
     // the main loop
     for (;;) {
         if (difftime(time(NULL), lastTick) > data.tickDelay) {
-            updateRadarWin(&data, radarWin);
+            if (updateRadarWin(&data, radarWin)) {
+                // if any of the update*() functions returns true, game is over
+                goto cleanup;
+            }
 
             lastTick += data.tickDelay;
         }
@@ -168,7 +171,7 @@ WINDOW *createRadarWin(AtcsoData *data) {
 /**
  * Update and refresh the radar window.
  */
-void updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
+bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
     int nPlanes = 0;
     for (Plane *p = data->planes; !isNull(p->xy); ++p, ++nPlanes) {
         mvwaddstr(radarWin, p->xy.y, 2 * p->xy.x, ". ");
@@ -179,9 +182,17 @@ void updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
         if (p->dir & DOWN) ++p->xy.y;
         if (p->dir & LEFT) --p->xy.x;
 
-        if ((p->xy.y == 0 || p->xy.y == 20) &&
-                (p->xy.x == 0 || p->xy.x == 29)) {
-            // TODO plane has either exited or crashed
+        if (p->xy.y == 0 || p->xy.y == 20 || p->xy.x == 0 || p->xy.x == 29) {
+            // the plane either exited or crashed
+            if (p->altitude != 9) return true;  // game over
+            for (XY *exit = data->exits; !isNull(*exit); ++exit) {
+                if (exit->y == p->xy.y && exit->x == p->xy.x) {
+                    // woohoo, plane exited!
+                    // TODO make sure it went in the right exit
+                    // TODO remove plane
+                }
+            }
+            return true;  // plane didn't hit an exit; game over
         }
 
         mvwaddch(radarWin, p->xy.y, 2 * p->xy.x, p->name);
@@ -214,4 +225,6 @@ void updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
     }
 
     wrefresh(radarWin);
+
+    return false;
 }
