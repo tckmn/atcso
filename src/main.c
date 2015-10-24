@@ -79,9 +79,8 @@ void mainloop() {
     data.airports[1] = (Airport) {{20, 18}, RIGHT};
     data.airports[2] = (Airport) {{-1, -1}, 0};
 
-    data.planes = malloc(2 * sizeof(Plane));
-    data.planes[0] = (Plane) {{1, 1}, RIGHT | DOWN, 'A'};
-    data.planes[1] = (Plane) {{-1, -1}, 0, 0};
+    data.planes = malloc(1 * sizeof(Plane));
+    data.planes[0] = (Plane) {{-1, -1}, 0, 0};
 
     // get all our windows
     refresh();
@@ -163,7 +162,8 @@ WINDOW *createRadarWin(AtcsoData *data) {
  * Update and refresh the radar window.
  */
 void updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
-    for (Plane *p = data->planes; !isNull(p->xy); ++p) {
+    int nPlanes = 0;
+    for (Plane *p = data->planes; !isNull(p->xy); ++p, ++nPlanes) {
         mvwaddstr(radarWin, p->xy.y, 2 * p->xy.x, ". ");
         // TODO check for beacons, airports; redraw and do actions
 
@@ -178,6 +178,18 @@ void updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
         }
 
         mvwaddch(radarWin, p->xy.y, 2 * p->xy.x, p->name);
+        waddch(radarWin, '7');
+    }
+
+    // TODO rand check, just... moar randomness
+    if (true) {
+        data->planes = realloc(data->planes, (nPlanes + 2) * sizeof(Plane));
+        data->planes[nPlanes] = (Plane) {{1, 1}, RIGHT | DOWN, 'A'};
+        data->planes[nPlanes + 1] = (Plane) {{-1, -1}, 0, '\0'};
+
+        mvwaddch(radarWin, data->planes[nPlanes].xy.y,
+                2 * data->planes[nPlanes].xy.x,
+                data->planes[nPlanes].name);
         waddch(radarWin, '7');
     }
 
