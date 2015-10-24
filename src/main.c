@@ -13,7 +13,7 @@ typedef struct {
 
 
 void mainloop();
-WINDOW *createRadarWin();
+WINDOW *createRadarWin(AtcsoData *data);
 void updateRadarWin(AtcsoData *data, WINDOW *radarWin);
 
 
@@ -45,7 +45,7 @@ void mainloop() {
 
     // get all our windows
     refresh();
-    WINDOW *radarWin = createRadarWin(data);
+    WINDOW *radarWin = createRadarWin(&data);
 
     // TODO put this somewhere... better
     const int TICK_DELAY = 2;
@@ -94,8 +94,9 @@ WINDOW *createRadarWin(AtcsoData *data) {
     waddch(radarWin, ' ');
 
     // add the exits
-    for (XY *p = data->exits; !isNull(*p); ++p) {
-        mvwaddch(radarWin, p->y, p->x, 'E');
+    XY *p = data->exits;
+    for (int i = 0; !isNull(*p); ++p, ++i) {
+        mvwaddch(radarWin, p->y, 2 * p->x, '0' + i);
     }
 
     wrefresh(radarWin);
