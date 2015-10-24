@@ -6,10 +6,10 @@ HEADERS = $(wildcard src/*.h)
 all: bin/atcso
 
 bin/%.o: src/%.c $(HEADERS)
-	gcc -g -Wall -c $< -o $@
+	gcc -g -O0 -Wall -Wpedantic -Wextra -c $< -o $@
 
 bin/atcso: $(OBJECTS)
-	gcc -g -Wall $^ -o $@ -lncurses
+	gcc -g -O0 -Wall -Wpedantic -Wextra $^ -o $@ -lncurses
 
 clean:
 	-rm -f bin/*
