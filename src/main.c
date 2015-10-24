@@ -3,12 +3,22 @@
 #include <time.h>
 
 
+// utility types
 typedef struct { int x; int y; } XY;
 int isNull(XY xy) { return xy.x < 0 || xy.y < 0; }
+typedef enum { UP, RIGHT, DOWN, LEFT } Direction;
 
+
+// types for storing global data
+typedef struct {
+    XY xy;
+    Direction dir;
+} Airport;
 
 typedef struct {
+    // these are arrays terminated by isNull(xy)
     XY *exits;
+    Airport *airports;
 } AtcsoData;
 
 
@@ -38,6 +48,7 @@ int main(int argc, char **argv) {
 void mainloop() {
     // initalize all the global data
     AtcsoData data;
+
     data.exits = malloc(9 * sizeof(XY));
     data.exits[0] = (XY) {12, 0};
     data.exits[1] = (XY) {29, 0};
@@ -48,6 +59,11 @@ void mainloop() {
     data.exits[6] = (XY) {0, 7};
     data.exits[7] = (XY) {0, 0};
     data.exits[8] = (XY) {-1, -1};
+
+    data.airports = malloc(3 * sizeof(Airport));
+    data.airports[0] = (Airport) {{20, 15}, UP};
+    data.airports[1] = (Airport) {{20, 18}, RIGHT};
+    data.airports[2] = (Airport) {{-1, -1}, 0};
 
     // get all our windows
     refresh();
