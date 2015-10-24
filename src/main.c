@@ -30,6 +30,7 @@ typedef struct {
     Plane *planes;
 
     double newPlaneRate;
+    char nextLetter;
 } AtcsoData;
 
 
@@ -86,6 +87,7 @@ void mainloop() {
     data.planes[0] = (Plane) {{-1, -1}, 0, 0};
 
     data.newPlaneRate = 0.1;
+    data.nextLetter = 'A';
 
     // get all our windows
     refresh();
@@ -189,8 +191,11 @@ void updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
     // TODO rand check, just... moar randomness
     if (rand() < RAND_MAX * data->newPlaneRate) {
         data->planes = realloc(data->planes, (nPlanes + 2) * sizeof(Plane));
-        data->planes[nPlanes] = (Plane) {{1, 1}, RIGHT | DOWN, 'A'};
+        data->planes[nPlanes] = (Plane) {{1, 1}, RIGHT | DOWN, data->nextLetter};
         data->planes[nPlanes + 1] = (Plane) {{-1, -1}, 0, '\0'};
+
+        ++data->nextLetter;
+        if (data->nextLetter > 'Z') data->nextLetter = 'A';
 
         mvwaddch(radarWin, data->planes[nPlanes].xy.y,
                 2 * data->planes[nPlanes].xy.x,
