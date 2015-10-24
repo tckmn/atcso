@@ -19,7 +19,8 @@ typedef struct {
     XY xy;
     Direction dir;
     char name;
-    // TODO fuel, target, speed, altitude, etc.
+    int altitude;
+    // TODO fuel, target, speed, etc.
 } Plane;
 
 typedef struct {
@@ -85,7 +86,7 @@ void mainloop() {
     data.airports[2] = (Airport) {{-1, -1}, 0};
 
     data.planes = malloc(1 * sizeof(Plane));
-    data.planes[0] = (Plane) {{-1, -1}, 0, 0};
+    data.planes[0] = (Plane) {{-1, -1}, 0, 0, 0};
 
     data.tickDelay = 1;
     data.newPlaneRate = 1;
@@ -200,8 +201,8 @@ void updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
 
         data->planes = realloc(data->planes, (nPlanes + 2) * sizeof(Plane));
         data->planes[nPlanes] = (Plane) {entryCoords, entryDir,
-                data->nextLetter};
-        data->planes[nPlanes + 1] = (Plane) {{-1, -1}, 0, '\0'};
+                data->nextLetter, 7};
+        data->planes[nPlanes + 1] = (Plane) {{-1, -1}, 0, 0, 0};
 
         ++data->nextLetter;
         if (data->nextLetter > 'Z') data->nextLetter = 'A';
@@ -209,7 +210,7 @@ void updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
         mvwaddch(radarWin, data->planes[nPlanes].xy.y,
                 2 * data->planes[nPlanes].xy.x,
                 data->planes[nPlanes].name);
-        waddch(radarWin, '7');
+        waddch(radarWin, '0' + data->planes[nPlanes].altitude);
     }
 
     wrefresh(radarWin);
