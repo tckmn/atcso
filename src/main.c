@@ -29,6 +29,7 @@ typedef struct {
     Airport *airports;
     Plane *planes;
 
+    int tickDelay;
     double newPlaneRate;
     char nextLetter;
 } AtcsoData;
@@ -86,15 +87,13 @@ void mainloop() {
     data.planes = malloc(1 * sizeof(Plane));
     data.planes[0] = (Plane) {{-1, -1}, 0, 0};
 
-    data.newPlaneRate = 0.1;
+    data.tickDelay = 1;
+    data.newPlaneRate = 1;
     data.nextLetter = 'A';
 
     // get all our windows
     refresh();
     WINDOW *radarWin = createRadarWin(&data);
-
-    // TODO put this somewhere... better
-    const int TICK_DELAY = 2;
 
     // vars used in the main loop
     int ch;
@@ -102,10 +101,10 @@ void mainloop() {
 
     // the main loop
     for (;;) {
-        if (difftime(time(NULL), lastTick) > TICK_DELAY) {
+        if (difftime(time(NULL), lastTick) > data.tickDelay) {
             updateRadarWin(&data, radarWin);
 
-            lastTick += TICK_DELAY;
+            lastTick += data.tickDelay;
         }
 
         if ((ch = getch()) != ERR) {
