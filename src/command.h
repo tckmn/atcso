@@ -3,13 +3,12 @@
 
 #include "data.h"
 
-typedef void (*callback)(AtcsoData*, char plane, char extra);
 
 struct treeNode_t;
 typedef struct treeNode_t {
     char hotkey;
     char *str;
-    callback func;
+    void (*func)(AtcsoData*, char plane, char extra);
     struct treeNode_t *children;
     int nChildren;
 } TreeNode;
