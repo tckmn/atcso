@@ -52,6 +52,9 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
     int nPlanes = 0;
     for (Plane *p = data->planes; !isNull(p->xy); ++p, ++nPlanes) {
         mvwaddstr(radarWin, p->xy.y, 2 * p->xy.x, ". ");
+    }
+
+    for (Plane *p = data->planes; !isNull(p->xy); ++p) {
         // TODO check for beacons, airports; redraw and do actions
 
         if (p->targetAltitude > p->altitude) ++p->altitude;
