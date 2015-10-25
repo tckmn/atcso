@@ -8,6 +8,7 @@
 // utility types
 typedef struct { int x; int y; } XY;
 #define isNull(xy) ((xy).x < 0 || (xy).y < 0)
+#define eq(xy1, xy2) ((xy1).x == (xy2).x && (xy1).y == (xy2).y)
 typedef enum { UP, UP_RIGHT, RIGHT, DOWN_RIGHT,
     DOWN, DOWN_LEFT, LEFT, UP_LEFT } Direction;
 #define dx(dir) ((dir == UP || dir == DOWN) ? 0 : \

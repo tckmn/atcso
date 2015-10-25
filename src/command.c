@@ -77,7 +77,7 @@ bool updateCommands(AtcsoData *data) {
         //   all the events if the plane's not even on a beacon
         int bIdx = 0;
         for (XY *beacon = data->beacons; !isNull(*beacon); ++beacon, ++bIdx) {
-            if (plane->xy.y == beacon->y && plane->xy.x == beacon->x) {
+            if (eq(plane->xy, *beacon)) {
                 // finally, check to see if there are any events matching this
                 for (int i = 0; i < nBqes; ++i) {
                     if (bqes[i].plane == plane->name && bqes[i].which == bIdx) {

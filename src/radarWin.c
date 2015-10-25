@@ -57,14 +57,14 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
         mvwaddstr(radarWin, p->xy.y, 2 * p->xy.x, ". ");
         int bIdx = 0;
         for (XY *b = data->beacons; !isNull(*b); ++b, ++bIdx) {
-            if (b->y == p->xy.y && b->x == p->xy.x) {
+            if (eq(*b, p->xy)) {
                 mvwaddch(radarWin, b->y, 2 * b->x, '*');
                 waddch(radarWin, '0' + bIdx);
             }
         }
         int aIdx = 0;
         for (Airport *a = data->airports; !isNull(a->xy); ++a, ++aIdx) {
-            if (a->xy.y == p->xy.y && a->xy.x == p->xy.x) {
+            if (eq(a->xy, p->xy)) {
                 mvwaddch(radarWin, a->xy.y, 2 * a->xy.x, "^_>_v_<_"[a->dir]);
                 waddch(radarWin, '0' + aIdx);
             }
@@ -104,7 +104,7 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
             if (p->altitude != 9) return true;  // game over
             int exitNum = 0;
             for (XY *exit = data->exits; !isNull(*exit); ++exit, ++exitNum) {
-                if (exit->y == p->xy.y && exit->x == p->xy.x) {
+                if (eq(*exit, p->xy)) {
                     // woohoo, plane exited!
                     if (p->destType == 'E' && p->dest == exitNum) {
                         // remove plane
@@ -126,7 +126,7 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
             // we either crashed, or landed
             int apNum = 0;
             for (Airport *ap = data->airports; !isNull(ap->xy); ++ap, ++apNum) {
-                if (ap->xy.y == p->xy.y && ap->xy.x == p->xy.x) {
+                if (eq(ap->xy, p->xy)) {
                     // plane landed (hopefully correctly)
                     if (p->destType == 'A' && p->dest == apNum) {
                         if (p->dir == ap->dir) {
