@@ -16,7 +16,13 @@ WINDOW *createInfoWin(AtcsoData *data) {
  * Update and refresh the message window.
  */
 bool updateInfoWin(AtcsoData *data, WINDOW *infoWin) {
-    waddstr(infoWin, "... ");
+    werase(infoWin);
+
+    wprintw(infoWin, "Time: %i  Safe: %i\n\npl dt comm\n", 0, 0);
+
+    for (Plane *plane = data->planes; !isNull(plane->xy); ++plane) {
+        wprintw(infoWin, "%c%c XX stuff\n", plane->name, '0' + plane->altitude);
+    }
 
     wrefresh(infoWin);
 
