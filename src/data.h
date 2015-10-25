@@ -8,7 +8,19 @@
 // utility types
 typedef struct { int x; int y; } XY;
 #define isNull(xy) ((xy).x < 0 || (xy).y < 0)
-typedef enum { UP = 1, RIGHT = 2, DOWN = 4, LEFT = 8 } Direction;
+typedef enum { UP, UP_RIGHT, RIGHT, DOWN_RIGHT,
+    DOWN, DOWN_LEFT, LEFT, UP_LEFT } Direction;
+#define dx(dir) ((dir == UP || dir == DOWN) ? 0 : \
+        (dir == UP_LEFT || dir == LEFT || dir == DOWN_LEFT) ? -1 : 1)
+#define dy(dir) ((dir == RIGHT || dir == LEFT) ? 0 : \
+        (dir == UP_LEFT || dir == UP || dir == UP_RIGHT) ? -1 : 1)
+#define fromdyx(dy, dx) ( \
+            (dy == -1) ? \
+                ((dx == -1) ? UP_LEFT : (dx == 1) ? UP_RIGHT : UP) \
+            : (dy == 1) ? \
+                ((dx == -1) ? DOWN_LEFT : (dx == 1) ? DOWN_RIGHT : DOWN) \
+            : ((dx == -1) ? LEFT : RIGHT) \
+        )
 
 // types for storing global data
 typedef struct {

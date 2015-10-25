@@ -36,7 +36,7 @@ WINDOW *createRadarWin(AtcsoData *data) {
     Airport *airport = data->airports;
     for (int i = 0; !isNull(airport->xy); ++airport, ++i) {
         mvwaddch(radarWin, airport->xy.y, 2 * airport->xy.x,
-                "_^>_v___<"[airport->dir]);
+                "^_>_v_<_"[airport->dir]);
         waddch(radarWin, '0' + i);
     }
 
@@ -58,10 +58,8 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
         if (p->targetAltitude < p->altitude) --p->altitude;
         // TODO check for landing at airport, crashing
 
-        if (p->dir & UP) --p->xy.y;
-        if (p->dir & RIGHT) ++p->xy.x;
-        if (p->dir & DOWN) ++p->xy.y;
-        if (p->dir & LEFT) --p->xy.x;
+        p->xy.y += dy(p->dir);
+        p->xy.x += dx(p->dir);
 
         if (p->xy.y == 0 || p->xy.y == 20 || p->xy.x == 0 || p->xy.x == 29) {
             // the plane either exited or crashed
@@ -85,11 +83,12 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
         for (XY *exit = data->exits; !isNull(*exit); ++exit, ++nExits);
 
         XY entryCoords = data->exits[rand() % nExits];
-        Direction entryDir = 0;
-        if (entryCoords.y == 0)  { entryCoords.y = 1;  entryDir |= DOWN;  }
-        if (entryCoords.y == 20) { entryCoords.y = 19; entryDir |= UP;    }
-        if (entryCoords.x == 0)  { entryCoords.x = 1;  entryDir |= RIGHT; }
-        if (entryCoords.x == 29) { entryCoords.x = 28; entryDir |= LEFT;  }
+        int dy = 0, dx = 0;
+        if (entryCoords.y == 0)  { entryCoords.y = 1;  dy = 1;  }
+        if (entryCoords.y == 20) { entryCoords.y = 19; dy = -1; }
+        if (entryCoords.x == 0)  { entryCoords.x = 1;  dx = 1;  }
+        if (entryCoords.x == 29) { entryCoords.x = 28; dx = -1; }
+        Direction entryDir = fromdyx(dy, dx);
 
         data->planes = realloc(data->planes, (nPlanes + 2) * sizeof(Plane));
         data->planes[nPlanes] = (Plane) {entryCoords, entryDir,
