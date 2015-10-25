@@ -58,6 +58,21 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
         if (p->targetAltitude < p->altitude) --p->altitude;
         // TODO check for landing at airport, crashing
 
+        if (p->dir != p->targetDir) {
+            if ((p->dir < p->targetDir ? p->dir+8 : p->dir) > p->targetDir+4) {
+                // we're turning clockwise
+                for (int i = 0; (i < 2) && (p->dir != p->targetDir); ++i) {
+                    p->dir = (p->dir + 1) % 8;
+                }
+            } else {
+                // going counterclockwise
+                for (int i = 0; (i < 2) && (p->dir != p->targetDir); ++i) {
+                    --p->dir;
+                    if (p->dir < 0) p->dir += 8;
+                }
+            }
+        }
+
         p->xy.y += dy(p->dir);
         p->xy.x += dx(p->dir);
 
