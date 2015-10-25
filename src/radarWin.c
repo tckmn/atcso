@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>  // WHY OH WHY is memmove defined in here
 
 #include "radarWin.h"
 
@@ -54,7 +55,8 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
         mvwaddstr(radarWin, p->xy.y, 2 * p->xy.x, ". ");
     }
 
-    for (Plane *p = data->planes; !isNull(p->xy); ++p) {
+    int pIdx = 0;
+    for (Plane *p = data->planes; !isNull(p->xy); ++p, ++pIdx) {
         // TODO check for beacons, airports; redraw and do actions
 
         if (p->targetAltitude > p->altitude) ++p->altitude;
@@ -82,11 +84,21 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
         if (p->xy.y == 0 || p->xy.y == 20 || p->xy.x == 0 || p->xy.x == 29) {
             // the plane either exited or crashed
             if (p->altitude != 9) return true;  // game over
-            for (XY *exit = data->exits; !isNull(*exit); ++exit) {
+            int exitNum = 0;
+            for (XY *exit = data->exits; !isNull(*exit); ++exit, ++exitNum) {
                 if (exit->y == p->xy.y && exit->x == p->xy.x) {
                     // woohoo, plane exited!
-                    // TODO make sure it went in the right exit
-                    // TODO remove plane
+                    if (p->destType == 'E' && p->dest == exitNum) {
+                        // remove plane
+                        memmove(data->planes + pIdx, data->planes + pIdx + 1,
+                                sizeof(Plane) * (nPlanes - pIdx));
+                        data->planes = realloc(data->planes,
+                                nPlanes * sizeof(Plane));
+                        p = data->planes + pIdx;
+                        goto exited;
+                    } else {
+                        return true;  // wrong exit, game over
+                    }
                 }
             }
             return true;  // plane didn't hit an exit; game over
@@ -94,6 +106,8 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
 
         mvwaddch(radarWin, p->xy.y, 2 * p->xy.x, p->name);
         waddch(radarWin, '0' + p->altitude);
+
+        exited: {}
     }
 
     if (rand() < RAND_MAX * data->newPlaneRate) {

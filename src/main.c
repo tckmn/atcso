@@ -60,7 +60,7 @@ void mainloop() {
     data.planes[0] = (Plane) {{-1, -1}, 0, 0, 0, 0, 0, 0, 0};
 
     data.tickDelay = 1;
-    data.newPlaneRate = 1;
+    data.newPlaneRate = 0.25;
     data.nextLetter = 'a';
 
     // get all our windows
