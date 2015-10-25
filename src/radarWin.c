@@ -3,6 +3,8 @@
 
 #include "radarWin.h"
 
+#define negmod(n, m) ((n) < 0 ? ((n) + m) : (n))
+
 /**
  * Creates the radar window, the biggest one that has all the planes and stuff.
  */
@@ -64,7 +66,13 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
         // TODO check for landing at airport, crashing
 
         if (p->dir != p->targetDir) {
-            if ((p->dir < p->targetDir ? p->dir+8 : p->dir) > p->targetDir+4) {
+            // how this algorithm works: we want to normalize p->dir to 0, so
+            // we can compare it to p->targetDir without "wrap-around." to
+            // change p->dir to 0, we add -p->dir. therefore, the "normalized"
+            // value of p->targetDir is p->targetDir-p->Dir modulo 8.
+            // unfortunately, in C, % is *remainder*, not modulo. so we had to
+            // "manually" implement a specialized version in a #define above.
+            if (negmod((int)p->targetDir - (int)p->dir, 8) <= 4) {
                 // we're turning clockwise
                 for (int i = 0; (i < 2) && (p->dir != p->targetDir); ++i) {
                     p->dir = (p->dir + 1) % 8;
@@ -72,8 +80,7 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
             } else {
                 // going counterclockwise
                 for (int i = 0; (i < 2) && (p->dir != p->targetDir); ++i) {
-                    --p->dir;
-                    if (p->dir < 0) p->dir += 8;
+                    p->dir = negmod((int)p->dir - 1, 8);
                 }
             }
         }
