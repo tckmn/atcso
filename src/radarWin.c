@@ -108,14 +108,6 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
                     // woohoo, plane exited!
                     if (p->destType == 'E' && p->dest == exitNum) {
                         // remove plane
-                        memmove(data->planes + pIdx, data->planes + pIdx + 1,
-                                sizeof(Plane) * (nPlanes - pIdx));
-                        data->planes = realloc(data->planes,
-                                nPlanes * sizeof(Plane));
-                        ++data->score;
-                        --nPlanes;
-                        --pIdx;
-                        p = data->planes + pIdx;
                         goto exited;
                     } else {
                         return true;  // wrong exit, game over
@@ -134,14 +126,6 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
                     if (p->destType == 'A' && p->dest == apNum) {
                         if (p->dir == ap->dir) {
                             // remove plane
-                            memmove(data->planes + pIdx, data->planes + pIdx + 1,
-                                    sizeof(Plane) * (nPlanes - pIdx));
-                            data->planes = realloc(data->planes,
-                                    nPlanes * sizeof(Plane));
-                            ++data->score;
-                            --nPlanes;
-                            --pIdx;
-                            p = data->planes + pIdx;
                             goto exited;
                         } else {
                             return true;  // wrong direction; game over
@@ -156,8 +140,16 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
 
         mvwaddch(radarWin, p->xy.y, 2 * p->xy.x, p->name);
         waddch(radarWin, '0' + p->altitude);
+        continue;
 
-        exited: {}
+        exited:
+        memmove(data->planes + pIdx, data->planes + pIdx + 1,
+                sizeof(Plane) * (nPlanes - pIdx));
+        data->planes = realloc(data->planes, nPlanes * sizeof(Plane));
+        ++data->score;
+        --nPlanes;
+        --pIdx;
+        p = data->planes + pIdx;
     }
 
     data->newPlaneCounter += (double)rand() / RAND_MAX;
