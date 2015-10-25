@@ -18,7 +18,8 @@ WINDOW *createInfoWin(AtcsoData *data) {
 bool updateInfoWin(AtcsoData *data, WINDOW *infoWin) {
     werase(infoWin);
 
-    wprintw(infoWin, "Time: %i  Safe: %i\n\npl dt comm\n", data->time, 0);
+    wprintw(infoWin, "Time: %i  Safe: %i\n\npl dt comm\n", data->time,
+            data->score);
 
     for (Plane *plane = data->planes; !isNull(plane->xy); ++plane) {
         wprintw(infoWin, "%c%c %c%c stuff\n", plane->name, '0' + plane->altitude,
