@@ -97,6 +97,10 @@ void mainloop() {
 
     cleanup:
     free(data.exits);
+    free(data.beacons);
+    free(data.airports);
+    free(data.planes);
     delwin(radarWin);
     delwin(msgWin);
+    delwin(infoWin);
 }
