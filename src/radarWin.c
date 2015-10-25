@@ -96,6 +96,8 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
     if (rand() < RAND_MAX * data->newPlaneRate) {
         int nExits = 0;
         for (XY *exit = data->exits; !isNull(*exit); ++exit, ++nExits);
+        int nAirports = 0;
+        for (Airport *ap = data->airports; !isNull(ap->xy); ++ap, ++nAirports);
 
         XY entryCoords = data->exits[rand() % nExits];
         int dy = 0, dx = 0;
@@ -104,10 +106,12 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
         if (entryCoords.x == 0)  { entryCoords.x = 1;  dx = 1;  }
         if (entryCoords.x == 29) { entryCoords.x = 28; dx = -1; }
         Direction entryDir = fromdyx(dy, dx);
+        int destIdx = rand() % (nExits + nAirports);
 
         data->planes = realloc(data->planes, (nPlanes + 2) * sizeof(Plane));
         data->planes[nPlanes] = (Plane) {entryCoords, data->nextLetter, 7, 7,
-                entryDir, entryDir, 'E', 0};
+                entryDir, entryDir, destIdx > nExits ? 'A' : 'E',
+                destIdx > nExits ? destIdx - nExits : destIdx};
         data->planes[nPlanes + 1] = (Plane) {{-1, -1}, 0, 0, 0, 0, 0, 0, 0};
 
         ++data->nextLetter;
