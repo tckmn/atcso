@@ -69,7 +69,7 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
             // how this algorithm works: we want to normalize p->dir to 0, so
             // we can compare it to p->targetDir without "wrap-around." to
             // change p->dir to 0, we add -p->dir. therefore, the "normalized"
-            // value of p->targetDir is p->targetDir-p->Dir modulo 8.
+            // value of p->targetDir is p->targetDir-p->dir modulo 8.
             // unfortunately, in C, % is *remainder*, not modulo. so we had to
             // "manually" implement a specialized version in a #define above.
             if (negmod((int)p->targetDir - (int)p->dir, 8) <= 4) {
