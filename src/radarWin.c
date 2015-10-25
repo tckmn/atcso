@@ -112,10 +112,10 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
                                 sizeof(Plane) * (nPlanes - pIdx));
                         data->planes = realloc(data->planes,
                                 nPlanes * sizeof(Plane));
-                        p = data->planes + pIdx;
                         ++data->score;
                         --nPlanes;
                         --pIdx;
+                        p = data->planes + pIdx;
                         goto exited;
                     } else {
                         return true;  // wrong exit, game over
@@ -138,10 +138,10 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
                                     sizeof(Plane) * (nPlanes - pIdx));
                             data->planes = realloc(data->planes,
                                     nPlanes * sizeof(Plane));
-                            p = data->planes + pIdx;
                             ++data->score;
                             --nPlanes;
                             --pIdx;
+                            p = data->planes + pIdx;
                             goto exited;
                         } else {
                             return true;  // wrong direction; game over
