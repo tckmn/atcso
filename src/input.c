@@ -55,6 +55,7 @@ void handleInput(char ch, AtcsoData *data, WINDOW *msgWin) {
         }
 
         if (ch == 'a' && curNode.func) {
+            delayedCmd = curNode.func;
             curNode = getDelayTree(&curNode);
             goto outputNode; // spaghetti code! \o/
         }

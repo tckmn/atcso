@@ -16,6 +16,7 @@ typedef struct treeNode_t {
 } TreeNode;
 
 extern TreeNode commands;
+extern callback delayedCmd;
 TreeNode getDelayTree(TreeNode *parent);
 void initializeCommands();
 bool updateCommands(AtcsoData *data);

@@ -6,6 +6,7 @@
 #define max(a,b) ((a) > (b) ? (a) : (b))
 
 TreeNode commands, delayTree;
+callback delayedCmd = NULL;
 
 void altitudeClimb(AtcsoData *data, char plane, char extra) {
     for (Plane *p = data->planes; !isNull(p->xy); ++p) {
