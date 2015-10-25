@@ -25,6 +25,21 @@ void handleInput(char ch, AtcsoData *data, WINDOW *msgWin) {
             werase(msgWin);
             wrefresh(msgWin);
         }
+    } else if (ch == '\x7f') {
+        if (curNode.parent) {
+            int y, x, len = 0; getyx(msgWin, y, x);
+            for (char *ch = curNode.str; *ch != '\0'; ++ch, ++len);
+            wmove(msgWin, y, x - len - (curNode.hotkey == '#' ? 0 : 1));
+            wclrtoeol(msgWin);
+            wrefresh(msgWin);
+            curNode = *curNode.parent;
+        } else {
+            // we only have a plane name. remove everything
+            wmove(msgWin, 0, 0);
+            wclrtoeol(msgWin);
+            wrefresh(msgWin);
+            curPlane = 0;
+        }
     } else {
         extra = ch;
         if (ch >= '0' && ch <= '9') ch = '#';

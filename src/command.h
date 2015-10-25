@@ -10,6 +10,7 @@ typedef struct treeNode_t {
     void (*func)(AtcsoData*, char plane, char extra);
     struct treeNode_t *children;
     int nChildren;
+    struct treeNode_t *parent;
 } TreeNode;
 
 extern TreeNode commands;

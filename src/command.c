@@ -57,29 +57,33 @@ void turnTo(AtcsoData *data, char plane, char extra) {
 }
 
 TreeNode *mkc(int count, ...);
+void setParents(TreeNode *tn);
 
 void initializeCommands() {
     commands = (TreeNode) {0, "", NULL, mkc(2,
         (TreeNode) {'a', "altitude", NULL, mkc(3,
             (TreeNode) {'c', "climb", NULL, mkc(1,
-                (TreeNode) {'#', "%c000 feet", altitudeClimb, NULL, 0}
-            ), 1},
+                (TreeNode) {'#', "%c000 feet", altitudeClimb, NULL, 0, NULL}
+            ), 1, NULL},
             (TreeNode) {'d', "descend", NULL, mkc(1,
-                (TreeNode) {'#', "%c000 feet", altitudeDescend, NULL, 0}
-            ), 1},
-            (TreeNode) {'#', "%c000 feet", altitudeSet, NULL, 0}
-        ), 3},
+                (TreeNode) {'#', "%c000 feet", altitudeDescend, NULL, 0, NULL}
+            ), 1, NULL},
+            (TreeNode) {'#', "%c000 feet", altitudeSet, NULL, 0, NULL}
+        ), 3, NULL},
         (TreeNode) {'t', "turn", NULL, mkc(8,
-            (TreeNode) {'w', "0 degrees", turnTo, NULL, 0},
-            (TreeNode) {'e', "45 degrees", turnTo, NULL, 0},
-            (TreeNode) {'d', "90 degrees", turnTo, NULL, 0},
-            (TreeNode) {'c', "135 degrees", turnTo, NULL, 0},
-            (TreeNode) {'x', "180 degrees", turnTo, NULL, 0},
-            (TreeNode) {'z', "225 degrees", turnTo, NULL, 0},
-            (TreeNode) {'a', "270 degrees", turnTo, NULL, 0},
-            (TreeNode) {'q', "315 degrees", turnTo, NULL, 0}
-        ), 8}
-    ), 2};
+            (TreeNode) {'w', "0 degrees", turnTo, NULL, 0, NULL},
+            (TreeNode) {'e', "45 degrees", turnTo, NULL, 0, NULL},
+            (TreeNode) {'d', "90 degrees", turnTo, NULL, 0, NULL},
+            (TreeNode) {'c', "135 degrees", turnTo, NULL, 0, NULL},
+            (TreeNode) {'x', "180 degrees", turnTo, NULL, 0, NULL},
+            (TreeNode) {'z', "225 degrees", turnTo, NULL, 0, NULL},
+            (TreeNode) {'a', "270 degrees", turnTo, NULL, 0, NULL},
+            (TreeNode) {'q', "315 degrees", turnTo, NULL, 0, NULL}
+        ), 8, NULL}
+    ), 2, NULL};
+
+    // traverse tree, set parents recursively
+    setParents(&commands);
 }
 
 TreeNode *mkc(int count, ...) {
@@ -93,4 +97,11 @@ TreeNode *mkc(int count, ...) {
 
     va_end(args);
     return a;
+}
+
+void setParents(TreeNode *tn) {
+    for (int i = 0; i < tn->nChildren; ++i) {
+        tn->children[i].parent = tn;
+        setParents(tn->children + i);
+    }
 }
