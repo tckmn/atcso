@@ -156,7 +156,8 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
         exited: {}
     }
 
-    if (rand() < RAND_MAX * data->newPlaneRate) {
+    data->newPlaneCounter += (double)rand() / RAND_MAX;
+    if (data->newPlaneCounter > data->newPlaneRate) {
         int nExits = 0;
         for (XY *exit = data->exits; !isNull(*exit); ++exit, ++nExits);
         int nAirports = 0;
@@ -184,6 +185,8 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
                 2 * data->planes[nPlanes].xy.x,
                 data->planes[nPlanes].name);
         waddch(radarWin, '0' + data->planes[nPlanes].altitude);
+
+        data->newPlaneCounter -= data->newPlaneRate;
     }
 
     wrefresh(radarWin);

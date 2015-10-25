@@ -61,6 +61,7 @@ typedef struct atcsoData_t {
 
     int tickDelay;
     double newPlaneRate;
+    double newPlaneCounter;
     char nextLetter;
 
     BeaconQueueEvent *bqes;
