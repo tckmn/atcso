@@ -4,6 +4,7 @@
 
 #include "radarWin.h"
 #include "msgWin.h"
+#include "input.h"
 
 
 void mainloop();
@@ -18,6 +19,7 @@ int main(int argc, char **argv) {
     noecho();               // Don't show things the user is typing
     nodelay(stdscr, TRUE);  // Non-blocking getch()
     srand(time(NULL));      // Seed RNG
+    initializeInput();      // duh
 
     mainloop();             // Start the game!
 
@@ -82,10 +84,10 @@ void mainloop() {
         }
 
         if ((ch = getch()) != ERR) {
-            switch (ch) {
-            case 'q':
-            case 'Q':
-                goto cleanup;
+            if (ch == 3) goto cleanup;  // Ctrl+C
+            else {
+                // let input.c handle it
+                handleInput(ch, &data, msgWin);
             }
         }
     }

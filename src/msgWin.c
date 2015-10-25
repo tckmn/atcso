@@ -16,7 +16,7 @@ WINDOW *createMsgWin(AtcsoData *data) {
  * Update and refresh the message window.
  */
 bool updateMsgWin(AtcsoData *data, WINDOW *msgWin) {
-    waddstr(msgWin, "... ");
+    //waddstr(msgWin, "... ");
 
     wrefresh(msgWin);
 

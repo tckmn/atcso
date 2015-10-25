@@ -23,13 +23,13 @@ void initializeCommands() {
     commands = (TreeNode) {0, "", NULL, mk2tn(
         (TreeNode) {'a', "altitude", NULL, mk3tn(
             (TreeNode) {'c', "climb", NULL, mk1tn(
-                (TreeNode) {'#', "#000 feet", altitudeClimb, NULL, 0}
-            ), 0},
+                (TreeNode) {'#', "%c000 feet", altitudeClimb, NULL, 0}
+            ), 1},
             (TreeNode) {'d', "descend", NULL, mk1tn(
-                (TreeNode) {'#', "#000 feet", altitudeDescend, NULL, 0}
-            ), 0},
-            (TreeNode) {'#', "#000 feet", altitudeSet, NULL, 0}
-        ), 0},
+                (TreeNode) {'#', "%c000 feet", altitudeDescend, NULL, 0}
+            ), 1},
+            (TreeNode) {'#', "%c000 feet", altitudeSet, NULL, 0}
+        ), 3},
         (TreeNode) {'t', "turn", NULL, NULL, 0}
     ), 2};
 }
