@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdarg.h>
 #include "command.h"
 
 #define min(a,b) ((a) < (b) ? (a) : (b))
@@ -36,42 +37,45 @@ void altitudeSet(AtcsoData *data, char plane, char extra) {
     // TODO: error, unknown plane
 }
 
-TreeNode *mk1tn(TreeNode n1);
-TreeNode *mk2tn(TreeNode n1, TreeNode n2);
-TreeNode *mk3tn(TreeNode n1, TreeNode n2, TreeNode n3);
+void turnTo(AtcsoData *data, char plane, char extra) {
+    // TODO
+}
+
+TreeNode *mkc(int count, ...);
 
 void initializeCommands() {
-    commands = (TreeNode) {0, "", NULL, mk2tn(
-        (TreeNode) {'a', "altitude", NULL, mk3tn(
-            (TreeNode) {'c', "climb", NULL, mk1tn(
+    commands = (TreeNode) {0, "", NULL, mkc(2,
+        (TreeNode) {'a', "altitude", NULL, mkc(3,
+            (TreeNode) {'c', "climb", NULL, mkc(1,
                 (TreeNode) {'#', "%c000 feet", altitudeClimb, NULL, 0}
             ), 1},
-            (TreeNode) {'d', "descend", NULL, mk1tn(
+            (TreeNode) {'d', "descend", NULL, mkc(1,
                 (TreeNode) {'#', "%c000 feet", altitudeDescend, NULL, 0}
             ), 1},
             (TreeNode) {'#', "%c000 feet", altitudeSet, NULL, 0}
         ), 3},
-        (TreeNode) {'t', "turn", NULL, NULL, 0}
+        (TreeNode) {'t', "turn", NULL, mkc(8,
+            (TreeNode) {'w', "0 degrees", turnTo, NULL, 0},
+            (TreeNode) {'e', "45 degrees", turnTo, NULL, 0},
+            (TreeNode) {'d', "90 degrees", turnTo, NULL, 0},
+            (TreeNode) {'c', "135 degrees", turnTo, NULL, 0},
+            (TreeNode) {'x', "180 degrees", turnTo, NULL, 0},
+            (TreeNode) {'z', "225 degrees", turnTo, NULL, 0},
+            (TreeNode) {'a', "270 degrees", turnTo, NULL, 0},
+            (TreeNode) {'q', "315 degrees", turnTo, NULL, 0}
+        ), 8}
     ), 2};
 }
 
-TreeNode *mk1tn(TreeNode n1) {
-    TreeNode *a = malloc(1 * sizeof(TreeNode));
-    a[0] = n1;
-    return a;
-}
+TreeNode *mkc(int count, ...) {
+    TreeNode *a = malloc(count * sizeof(TreeNode));
+    va_list args;
+    va_start(args, count);
 
-TreeNode *mk2tn(TreeNode n1, TreeNode n2) {
-    TreeNode *a = malloc(2 * sizeof(TreeNode));
-    a[0] = n1;
-    a[1] = n2;
-    return a;
-}
+    for (int i = 0; i < count; ++i) {
+        a[i] = va_arg(args, TreeNode);
+    }
 
-TreeNode *mk3tn(TreeNode n1, TreeNode n2, TreeNode n3) {
-    TreeNode *a = malloc(3 * sizeof(TreeNode));
-    a[0] = n1;
-    a[1] = n2;
-    a[2] = n3;
+    va_end(args);
     return a;
 }
