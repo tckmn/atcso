@@ -53,7 +53,7 @@ void handleInput(char ch, AtcsoData *data, WINDOW *msgWin) {
                     waddstr(msgWin, curNode->str);
                 }
                 wrefresh(msgWin);
-                break;
+                return;
             }
         }
 
