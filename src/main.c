@@ -56,7 +56,7 @@ void mainloop() {
     data.airports[2] = (Airport) {{-1, -1}, 0};
 
     data.planes = malloc(1 * sizeof(Plane));
-    data.planes[0] = (Plane) {{-1, -1}, 0, 0, 0, 0};
+    data.planes[0] = (Plane) {{-1, -1}, 0, 0, 0, 0, 0};
 
     data.tickDelay = 1;
     data.newPlaneRate = 1;

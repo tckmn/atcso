@@ -31,6 +31,7 @@ typedef struct {
 typedef struct {
     XY xy;
     Direction dir;
+    Direction targetDir;
     char name;
     int altitude;
     int targetAltitude;
