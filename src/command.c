@@ -7,6 +7,8 @@
 
 TreeNode commands, delayTree;
 callback delayedCmd = NULL;
+BeaconQueueEvent *bqes = NULL;
+int nBqes = 0;
 
 void altitudeClimb(AtcsoData *data, char plane, char extra) {
     for (Plane *p = data->planes; !isNull(p->xy); ++p) {
@@ -57,6 +59,12 @@ void turnTo(AtcsoData *data, char plane, char extra) {
     // TODO: error, unknown plane
 }
 
+void delayBeacon(AtcsoData *data, char plane, char extra) {
+    BeaconQueueEvent bqe = (BeaconQueueEvent) {plane, extra - '0', delayedCmd};
+    bqes = realloc(bqes, (++nBqes) * sizeof(BeaconQueueEvent));
+    bqes[nBqes - 1] = bqe;
+}
+
 bool updateCommands(AtcsoData *data) {
     return false;
 }
@@ -89,7 +97,7 @@ void initializeCommands() {
 
     delayTree = (TreeNode) {0, "at", NULL, mkc(1,
         (TreeNode) {'b', "beacon", NULL, mkc(1,
-            (TreeNode) {'#', "%c", NULL, NULL, 0, NULL}
+            (TreeNode) {'#', "%c", delayBeacon, NULL, 0, NULL}
         ), 1, NULL}
     ), 1, NULL};
 

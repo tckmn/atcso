@@ -21,4 +21,10 @@ TreeNode getDelayTree(TreeNode *parent);
 void initializeCommands();
 bool updateCommands(AtcsoData *data);
 
+typedef struct {
+    char plane;
+    int which;
+    callback func;
+} BeaconQueueEvent;
+
 #endif
