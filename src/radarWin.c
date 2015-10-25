@@ -114,6 +114,8 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
                                 nPlanes * sizeof(Plane));
                         p = data->planes + pIdx;
                         ++data->score;
+                        --nPlanes;
+                        --pIdx;
                         goto exited;
                     } else {
                         return true;  // wrong exit, game over
@@ -138,6 +140,8 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
                                     nPlanes * sizeof(Plane));
                             p = data->planes + pIdx;
                             ++data->score;
+                            --nPlanes;
+                            --pIdx;
                             goto exited;
                         } else {
                             return true;  // wrong direction; game over
