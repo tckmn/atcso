@@ -38,7 +38,22 @@ void altitudeSet(AtcsoData *data, char plane, char extra) {
 }
 
 void turnTo(AtcsoData *data, char plane, char extra) {
-    // TODO
+    for (Plane *p = data->planes; !isNull(p->xy); ++p) {
+        if (p->name == plane) {
+            switch (extra) {
+                case 'w': p->targetDir = 0; break;
+                case 'e': p->targetDir = 1; break;
+                case 'd': p->targetDir = 2; break;
+                case 'c': p->targetDir = 3; break;
+                case 'x': p->targetDir = 4; break;
+                case 'z': p->targetDir = 5; break;
+                case 'a': p->targetDir = 6; break;
+                case 'q': p->targetDir = 7; break;
+            }
+            return;
+        }
+    }
+    // TODO: error, unknown plane
 }
 
 TreeNode *mkc(int count, ...);
