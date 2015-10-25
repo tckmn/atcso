@@ -77,8 +77,8 @@ void mainloop() {
     for (;;) {
         if (difftime(time(NULL), lastTick) > data.tickDelay) {
             if (updateRadarWin(&data, radarWin) ||
-                    updateMsgWin(&data, msgWin) ||
-                    updateInfoWin(&data, infoWin)) {
+                    updateInfoWin(&data, infoWin) ||
+                    updateMsgWin(&data, msgWin)) {
                 // if any of the update*() functions returns true, game is over
                 goto cleanup;
             }
