@@ -56,6 +56,10 @@ void turnTo(AtcsoData *data, char plane, char extra) {
     // TODO: error, unknown plane
 }
 
+bool updateCommands(AtcsoData *data) {
+    return false;
+}
+
 TreeNode *mkc(int count, ...);
 void setParents(TreeNode *tn);
 

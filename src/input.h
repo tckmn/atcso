@@ -3,7 +3,6 @@
 
 #include "data.h"
 
-void initializeInput();
 void handleInput(char ch, AtcsoData *data, WINDOW *msgWin);
 
 #endif

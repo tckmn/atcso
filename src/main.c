@@ -6,6 +6,7 @@
 #include "msgWin.h"
 #include "infoWin.h"
 #include "input.h"
+#include "command.h"
 
 
 void mainloop();
@@ -20,7 +21,7 @@ int main(int argc, char **argv) {
     noecho();               // Don't show things the user is typing
     nodelay(stdscr, TRUE);  // Non-blocking getch()
     srand(time(NULL));      // Seed RNG
-    initializeInput();      // duh
+    initializeCommands();   // duh
 
     mainloop();             // Start the game!
 
@@ -78,7 +79,8 @@ void mainloop() {
         if (difftime(time(NULL), lastTick) > data.tickDelay) {
             if (updateRadarWin(&data, radarWin) ||
                     updateInfoWin(&data, infoWin) ||
-                    updateMsgWin(&data, msgWin)) {
+                    updateMsgWin(&data, msgWin) ||
+                    updateCommands(&data)) {
                 // if any of the update*() functions returns true, game is over
                 goto cleanup;
             }

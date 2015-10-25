@@ -2,12 +2,7 @@
 #include "command.h"
 
 TreeNode curNode;
-char curPlane, extra;
-
-void initializeInput() {
-    initializeCommands();
-    curPlane = 0;
-}
+char curPlane = 0, extra;
 
 void handleInput(char ch, AtcsoData *data, WINDOW *msgWin) {
     if (!curPlane) {
