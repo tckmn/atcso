@@ -21,6 +21,7 @@ typedef struct {
     Direction dir;
     char name;
     int altitude;
+    int targetAltitude;
     // TODO fuel, target, speed, etc.
 } Plane;
 

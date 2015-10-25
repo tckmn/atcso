@@ -54,6 +54,10 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
         mvwaddstr(radarWin, p->xy.y, 2 * p->xy.x, ". ");
         // TODO check for beacons, airports; redraw and do actions
 
+        if (p->targetAltitude > p->altitude) ++p->altitude;
+        if (p->targetAltitude < p->altitude) --p->altitude;
+        // TODO check for landing at airport, crashing
+
         if (p->dir & UP) --p->xy.y;
         if (p->dir & RIGHT) ++p->xy.x;
         if (p->dir & DOWN) ++p->xy.y;
@@ -73,7 +77,7 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
         }
 
         mvwaddch(radarWin, p->xy.y, 2 * p->xy.x, p->name);
-        waddch(radarWin, '7');
+        waddch(radarWin, '0' + p->altitude);
     }
 
     if (rand() < RAND_MAX * data->newPlaneRate) {
@@ -89,11 +93,11 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
 
         data->planes = realloc(data->planes, (nPlanes + 2) * sizeof(Plane));
         data->planes[nPlanes] = (Plane) {entryCoords, entryDir,
-                data->nextLetter, 7};
-        data->planes[nPlanes + 1] = (Plane) {{-1, -1}, 0, 0, 0};
+                data->nextLetter, 7, 7};
+        data->planes[nPlanes + 1] = (Plane) {{-1, -1}, 0, 0, 0, 0};
 
         ++data->nextLetter;
-        if (data->nextLetter > 'Z') data->nextLetter = 'A';
+        if (data->nextLetter > 'z') data->nextLetter = 'a';
 
         mvwaddch(radarWin, data->planes[nPlanes].xy.y,
                 2 * data->planes[nPlanes].xy.x,

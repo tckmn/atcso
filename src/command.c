@@ -12,7 +12,13 @@ void altitudeDescend(AtcsoData *data, char plane, char extra) {
 }
 
 void altitudeSet(AtcsoData *data, char plane, char extra) {
-    // TODO
+    for (Plane *p = data->planes; !isNull(p->xy); ++p) {
+        if (p->name == plane) {
+            p->targetAltitude = extra - '0';
+            return;
+        }
+    }
+    // TODO: error, unknown plane
 }
 
 TreeNode *mk1tn(TreeNode n1);
