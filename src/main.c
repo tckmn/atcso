@@ -64,6 +64,9 @@ void mainloop() {
     data.newPlaneRate = 0.25;
     data.nextLetter = 'a';
 
+    data.bqes = NULL;
+    data.nBqes = 0;
+
     // get all our windows
     refresh();
     WINDOW *radarWin = createRadarWin(&data);

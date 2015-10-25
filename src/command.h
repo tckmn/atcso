@@ -3,8 +3,6 @@
 
 #include "data.h"
 
-typedef void (*callback)(AtcsoData*, char, char);
-
 struct treeNode_t;
 typedef struct treeNode_t {
     char hotkey;
@@ -21,12 +19,5 @@ extern char delayedExtra;
 TreeNode *getDelayTree(TreeNode *parent);
 void initializeCommands();
 bool updateCommands(AtcsoData *data);
-
-typedef struct {
-    int which;
-    callback func;
-    char plane;
-    char extra;
-} BeaconQueueEvent;
 
 #endif

@@ -23,6 +23,8 @@ typedef enum { UP, UP_RIGHT, RIGHT, DOWN_RIGHT,
             : ((dx == -1) ? LEFT : RIGHT) \
         )
 
+struct atcsoData_t;
+
 // types for storing global data
 typedef struct {
     XY xy;
@@ -41,7 +43,16 @@ typedef struct {
     // TODO fuel, speed, etc.
 } Plane;
 
+typedef void (*callback)(struct atcsoData_t*, char, char);
+
 typedef struct {
+    int which;
+    callback func;
+    char plane;
+    char extra;
+} BeaconQueueEvent;
+
+typedef struct atcsoData_t {
     // these are arrays terminated by isNull(xy)
     XY *exits;
     XY *beacons;
@@ -51,6 +62,9 @@ typedef struct {
     int tickDelay;
     double newPlaneRate;
     char nextLetter;
+
+    BeaconQueueEvent *bqes;
+    int nBqes;
 } AtcsoData;
 
 #endif

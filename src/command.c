@@ -9,8 +9,6 @@
 TreeNode commands, delayTree;
 callback delayedCmd = NULL;
 char delayedExtra = 0;
-BeaconQueueEvent *bqes = NULL;
-int nBqes = 0;
 
 void altitudeClimb(AtcsoData *data, char plane, char extra) {
     for (Plane *p = data->planes; !isNull(p->xy); ++p) {
@@ -64,8 +62,8 @@ void turnTo(AtcsoData *data, char plane, char extra) {
 void delayBeacon(AtcsoData *data, char plane, char extra) {
     BeaconQueueEvent bqe = (BeaconQueueEvent) {extra - '0', delayedCmd, plane,
             delayedExtra};
-    bqes = realloc(bqes, (++nBqes) * sizeof(BeaconQueueEvent));
-    bqes[nBqes - 1] = bqe;
+    data->bqes = realloc(data->bqes, (++data->nBqes) * sizeof(BeaconQueueEvent));
+    data->bqes[data->nBqes - 1] = bqe;
 }
 
 bool updateCommands(AtcsoData *data) {
@@ -79,14 +77,17 @@ bool updateCommands(AtcsoData *data) {
         for (XY *beacon = data->beacons; !isNull(*beacon); ++beacon, ++bIdx) {
             if (eq(plane->xy, *beacon)) {
                 // finally, check to see if there are any events matching this
-                for (int i = 0; i < nBqes; ++i) {
-                    if (bqes[i].plane == plane->name && bqes[i].which == bIdx) {
+                for (int i = 0; i < data->nBqes; ++i) {
+                    if (data->bqes[i].plane == plane->name &&
+                            data->bqes[i].which == bIdx) {
                         // yay! we have an event!
-                        (*bqes[i].func)(data, bqes[i].plane, bqes[i].extra);
+                        (*data->bqes[i].func)(data, data->bqes[i].plane,
+                                data->bqes[i].extra);
                         // remove bqe
-                        memmove(bqes + i, bqes + i + 1,
-                                sizeof(BeaconQueueEvent) * (--nBqes - i));
-                        bqes = realloc(bqes, nBqes * sizeof(BeaconQueueEvent));
+                        memmove(data->bqes + i, data->bqes + i + 1,
+                                sizeof(BeaconQueueEvent) * (--data->nBqes - i));
+                        data->bqes = realloc(data->bqes,
+                                data->nBqes * sizeof(BeaconQueueEvent));
                         --i;
                     }
                 }
