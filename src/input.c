@@ -26,17 +26,14 @@ void handleInput(char ch, AtcsoData *data, WINDOW *msgWin) {
             wrefresh(msgWin);
         }
     } else {
-        extra = '\0';
-        if (ch >= '0' && ch <= '9') {
-            extra = ch;
-            ch = '#';
-        }
+        extra = ch;
+        if (ch >= '0' && ch <= '9') ch = '#';
 
         for (int i = 0; i < curNode.nChildren; ++i) {
             if (curNode.children[i].hotkey == ch) {
                 curNode = curNode.children[i];
                 waddch(msgWin, ' ');
-                if (extra) {
+                if (ch == '#') {
                     wprintw(msgWin, curNode.str, extra);
                 } else {
                     waddstr(msgWin, curNode.str);
