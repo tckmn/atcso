@@ -1,14 +1,29 @@
 #include <stdlib.h>
 #include "command.h"
 
+#define min(a,b) ((a) < (b) ? (a) : (b))
+#define max(a,b) ((a) > (b) ? (a) : (b))
+
 TreeNode commands;
 
 void altitudeClimb(AtcsoData *data, char plane, char extra) {
-    // TODO
+    for (Plane *p = data->planes; !isNull(p->xy); ++p) {
+        if (p->name == plane) {
+            p->targetAltitude = min(9, p->altitude + (extra - '0'));
+            return;
+        }
+    }
+    // TODO: error, unknown plane
 }
 
 void altitudeDescend(AtcsoData *data, char plane, char extra) {
-    // TODO
+    for (Plane *p = data->planes; !isNull(p->xy); ++p) {
+        if (p->name == plane) {
+            p->targetAltitude = max(0, p->altitude + (extra - '0'));
+            return;
+        }
+    }
+    // TODO: error, unknown plane
 }
 
 void altitudeSet(AtcsoData *data, char plane, char extra) {
