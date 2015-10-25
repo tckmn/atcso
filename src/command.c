@@ -134,9 +134,9 @@ void initializeCommands() {
     setParents(&delayTree);
 }
 
-TreeNode getDelayTree(TreeNode *parent) {
+TreeNode *getDelayTree(TreeNode *parent) {
     delayTree.parent = parent;
-    return delayTree;
+    return &delayTree;
 }
 
 TreeNode *mkc(int count, ...) {
