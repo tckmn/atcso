@@ -4,6 +4,14 @@
 #include "radarWin.h"
 
 #define negmod(n, m) ((n) < 0 ? ((n) + m) : (n))
+#define drawBeacon(b, i) do { \
+        mvwaddch(radarWin, (b).y, 2 * (b).x, '*'); \
+        waddch(radarWin, '0' + (i)); \
+    } while (0)
+#define drawAirport(a, i) do { \
+        mvwaddch(radarWin, (a).xy.y, 2 * (a).xy.x, "^_>_v_<_"[(a).dir]); \
+        waddch(radarWin, '0' + (i)); \
+    } while (0)
 
 /**
  * Creates the radar window, the biggest one that has all the planes and stuff.
@@ -31,16 +39,13 @@ WINDOW *createRadarWin(AtcsoData *data) {
     // add the beacons
     xy = data->beacons;
     for (int i = 0; !isNull(*xy); ++xy, ++i) {
-        mvwaddch(radarWin, xy->y, 2 * xy->x, '*');
-        waddch(radarWin, '0' + i);
+        drawBeacon(*xy, i);
     }
 
     // add the airports
     Airport *airport = data->airports;
     for (int i = 0; !isNull(airport->xy); ++airport, ++i) {
-        mvwaddch(radarWin, airport->xy.y, 2 * airport->xy.x,
-                "^_>_v_<_"[airport->dir]);
-        waddch(radarWin, '0' + i);
+        drawAirport(*airport, i);
     }
 
     updateRadarWin(data, radarWin);
@@ -57,17 +62,11 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
         mvwaddstr(radarWin, p->xy.y, 2 * p->xy.x, ". ");
         int bIdx = 0;
         for (XY *b = data->beacons; !isNull(*b); ++b, ++bIdx) {
-            if (eq(*b, p->xy)) {
-                mvwaddch(radarWin, b->y, 2 * b->x, '*');
-                waddch(radarWin, '0' + bIdx);
-            }
+            if (eq(*b, p->xy)) drawBeacon(*b, bIdx);
         }
         int aIdx = 0;
         for (Airport *a = data->airports; !isNull(a->xy); ++a, ++aIdx) {
-            if (eq(a->xy, p->xy)) {
-                mvwaddch(radarWin, a->xy.y, 2 * a->xy.x, "^_>_v_<_"[a->dir]);
-                waddch(radarWin, '0' + aIdx);
-            }
+            if (eq(a->xy, p->xy)) drawAirport(*a, aIdx);
         }
     }
 
