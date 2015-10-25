@@ -55,12 +55,17 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
     int nPlanes = 0;
     for (Plane *p = data->planes; !isNull(p->xy); ++p, ++nPlanes) {
         mvwaddstr(radarWin, p->xy.y, 2 * p->xy.x, ". ");
+        int bIdx = 0;
+        for (XY *b = data->beacons; !isNull(*b); ++b, ++bIdx) {
+            if (b->y == p->xy.y && b->x == p->xy.x) {
+                mvwaddch(radarWin, b->y, 2 * b->x, '*');
+                waddch(radarWin, '0' + bIdx);
+            }
+        }
     }
 
     int pIdx = 0;
     for (Plane *p = data->planes; !isNull(p->xy); ++p, ++pIdx) {
-        // TODO check for beacons, airports; redraw and do actions
-
         if (p->targetAltitude > p->altitude) ++p->altitude;
         if (p->targetAltitude < p->altitude) --p->altitude;
 
