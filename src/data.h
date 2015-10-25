@@ -30,12 +30,14 @@ typedef struct {
 
 typedef struct {
     XY xy;
-    Direction dir;
-    Direction targetDir;
     char name;
     int altitude;
     int targetAltitude;
-    // TODO fuel, target, speed, etc.
+    Direction dir;
+    Direction targetDir;
+    char destType;
+    int dest;
+    // TODO fuel, speed, etc.
 } Plane;
 
 typedef struct {

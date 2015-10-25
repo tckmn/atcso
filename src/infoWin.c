@@ -21,7 +21,8 @@ bool updateInfoWin(AtcsoData *data, WINDOW *infoWin) {
     wprintw(infoWin, "Time: %i  Safe: %i\n\npl dt comm\n", 0, 0);
 
     for (Plane *plane = data->planes; !isNull(plane->xy); ++plane) {
-        wprintw(infoWin, "%c%c XX stuff\n", plane->name, '0' + plane->altitude);
+        wprintw(infoWin, "%c%c %c%c stuff\n", plane->name, '0' + plane->altitude,
+                plane->destType, '0' + plane->dest);
     }
 
     wrefresh(infoWin);

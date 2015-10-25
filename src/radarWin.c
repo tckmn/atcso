@@ -106,9 +106,9 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
         Direction entryDir = fromdyx(dy, dx);
 
         data->planes = realloc(data->planes, (nPlanes + 2) * sizeof(Plane));
-        data->planes[nPlanes] = (Plane) {entryCoords, entryDir, entryDir,
-                data->nextLetter, 7, 7};
-        data->planes[nPlanes + 1] = (Plane) {{-1, -1}, 0, 0, 0, 0, 0};
+        data->planes[nPlanes] = (Plane) {entryCoords, data->nextLetter, 7, 7,
+                entryDir, entryDir, 'E', 0};
+        data->planes[nPlanes + 1] = (Plane) {{-1, -1}, 0, 0, 0, 0, 0, 0, 0};
 
         ++data->nextLetter;
         if (data->nextLetter > 'z') data->nextLetter = 'a';
