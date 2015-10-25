@@ -65,6 +65,9 @@ typedef struct atcsoData_t {
 
     BeaconQueueEvent *bqes;
     int nBqes;
+
+    int time;
+    int score;
 } AtcsoData;
 
 #endif

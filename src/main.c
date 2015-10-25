@@ -67,6 +67,9 @@ void mainloop() {
     data.bqes = NULL;
     data.nBqes = 0;
 
+    data.time = 0;
+    data.score = 0;
+
     // get all our windows
     refresh();
     WINDOW *radarWin = createRadarWin(&data);
@@ -89,6 +92,7 @@ void mainloop() {
             }
 
             lastTick += data.tickDelay;
+            ++data.time;
         }
 
         if ((ch = getch()) != ERR) {
