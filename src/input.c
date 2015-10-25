@@ -47,6 +47,7 @@ void handleInput(char ch, AtcsoData *data, WINDOW *msgWin) {
         for (int i = 0; i < curNode.nChildren; ++i) {
             if (curNode.children[i].hotkey == ch) {
                 curNode = curNode.children[i];
+                outputNode:
                 waddch(msgWin, ' ');
                 if (ch == '#') {
                     wprintw(msgWin, curNode.str, extra);
@@ -56,6 +57,11 @@ void handleInput(char ch, AtcsoData *data, WINDOW *msgWin) {
                 wrefresh(msgWin);
                 break;
             }
+        }
+
+        if (ch == 'a' && curNode.func) {
+            curNode = getDelayTree(&curNode);
+            goto outputNode; // spaghetti code! \o/
         }
     }
 }

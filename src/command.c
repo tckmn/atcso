@@ -5,7 +5,7 @@
 #define min(a,b) ((a) < (b) ? (a) : (b))
 #define max(a,b) ((a) > (b) ? (a) : (b))
 
-TreeNode commands;
+TreeNode commands, delayTree;
 
 void altitudeClimb(AtcsoData *data, char plane, char extra) {
     for (Plane *p = data->planes; !isNull(p->xy); ++p) {
@@ -82,8 +82,20 @@ void initializeCommands() {
         ), 8, NULL}
     ), 2, NULL};
 
+    delayTree = (TreeNode) {0, "at", NULL, mkc(1,
+        (TreeNode) {'b', "beacon", NULL, mkc(1,
+            (TreeNode) {'#', "%c", NULL, NULL, 0, NULL}
+        ), 1, NULL}
+    ), 1, NULL};
+
     // traverse tree, set parents recursively
     setParents(&commands);
+    setParents(&delayTree);
+}
+
+TreeNode getDelayTree(TreeNode *parent) {
+    delayTree.parent = parent;
+    return delayTree;
 }
 
 TreeNode *mkc(int count, ...) {
