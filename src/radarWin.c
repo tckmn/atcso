@@ -62,6 +62,13 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
                 waddch(radarWin, '0' + bIdx);
             }
         }
+        int aIdx = 0;
+        for (Airport *a = data->airports; !isNull(a->xy); ++a, ++aIdx) {
+            if (a->xy.y == p->xy.y && a->xy.x == p->xy.x) {
+                mvwaddch(radarWin, a->xy.y, 2 * a->xy.x, "^_>_v_<_"[a->dir]);
+                waddch(radarWin, '0' + aIdx);
+            }
+        }
     }
 
     int pIdx = 0;
