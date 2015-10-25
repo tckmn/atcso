@@ -100,6 +100,12 @@ void mainloop() {
     free(data.beacons);
     free(data.airports);
     free(data.planes);
+
+    werase(msgWin);
+    waddstr(msgWin, "Game over... (press space to exit)");
+    wrefresh(msgWin);
+    while ((ch = getch()) != ' ');
+
     delwin(radarWin);
     delwin(msgWin);
     delwin(infoWin);
