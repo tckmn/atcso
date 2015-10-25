@@ -20,7 +20,7 @@ void altitudeClimb(AtcsoData *data, char plane, char extra) {
 void altitudeDescend(AtcsoData *data, char plane, char extra) {
     for (Plane *p = data->planes; !isNull(p->xy); ++p) {
         if (p->name == plane) {
-            p->targetAltitude = max(0, p->altitude + (extra - '0'));
+            p->targetAltitude = max(0, p->altitude - (extra - '0'));
             return;
         }
     }
