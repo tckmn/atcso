@@ -4,6 +4,7 @@
 
 #include "radarWin.h"
 #include "msgWin.h"
+#include "infoWin.h"
 #include "input.h"
 
 
@@ -66,6 +67,7 @@ void mainloop() {
     refresh();
     WINDOW *radarWin = createRadarWin(&data);
     WINDOW *msgWin = createMsgWin(&data);
+    WINDOW *infoWin = createInfoWin(&data);
 
     // vars used in the main loop
     int ch;
@@ -75,7 +77,8 @@ void mainloop() {
     for (;;) {
         if (difftime(time(NULL), lastTick) > data.tickDelay) {
             if (updateRadarWin(&data, radarWin) ||
-                    updateMsgWin(&data, msgWin)) {
+                    updateMsgWin(&data, msgWin) ||
+                    updateInfoWin(&data, infoWin)) {
                 // if any of the update*() functions returns true, game is over
                 goto cleanup;
             }
