@@ -36,11 +36,14 @@ void handleInput(char ch, AtcsoData *data, WINDOW *msgWin) {
             curPlane = 0;
         }
     } else {
-        extra = ch;
-        if (ch >= '0' && ch <= '9') ch = '#';
+        if (ch >= '0' && ch <= '9') {
+            extra = ch;
+            ch = '#';
+        }
 
         for (int i = 0; i < curNode.nChildren; ++i) {
             if (curNode.children[i].hotkey == ch) {
+                if (ch != '#') extra = ch;
                 curNode = curNode.children[i];
                 outputNode:
                 waddch(msgWin, ' ');
@@ -56,6 +59,7 @@ void handleInput(char ch, AtcsoData *data, WINDOW *msgWin) {
 
         if (ch == 'a' && curNode.func) {
             delayedCmd = curNode.func;
+            delayedExtra = extra;
             curNode = getDelayTree(&curNode);
             goto outputNode; // spaghetti code! \o/
         }

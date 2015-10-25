@@ -7,6 +7,7 @@
 
 TreeNode commands, delayTree;
 callback delayedCmd = NULL;
+char delayedExtra = 0;
 BeaconQueueEvent *bqes = NULL;
 int nBqes = 0;
 
@@ -60,12 +61,34 @@ void turnTo(AtcsoData *data, char plane, char extra) {
 }
 
 void delayBeacon(AtcsoData *data, char plane, char extra) {
-    BeaconQueueEvent bqe = (BeaconQueueEvent) {plane, extra - '0', delayedCmd};
+    BeaconQueueEvent bqe = (BeaconQueueEvent) {extra - '0', delayedCmd, plane,
+            delayedExtra};
     bqes = realloc(bqes, (++nBqes) * sizeof(BeaconQueueEvent));
     bqes[nBqes - 1] = bqe;
 }
 
 bool updateCommands(AtcsoData *data) {
+    // # beacons < # bqe's < # planes
+    // therefore, the outer loop (the one run the fewest times) should loop
+    //   over the largest array
+    for (Plane *plane = data->planes; !isNull(plane->xy); ++plane) {
+        // now we loop over beacons, because there's no point in looping over
+        //   all the events if the plane's not even on a beacon
+        int bIdx = 0;
+        for (XY *beacon = data->beacons; !isNull(*beacon); ++beacon, ++bIdx) {
+            if (plane->xy.y == beacon->y && plane->xy.x == beacon->x) {
+                // finally, check to see if there are any events matching this
+                for (int i = 0; i < nBqes; ++i) {
+                    if (bqes[i].plane == plane->name && bqes[i].which == bIdx) {
+                        // yay! we have an event!
+                        (*bqes[i].func)(data, bqes[i].plane, bqes[i].extra);
+                        // TODO remove from bqes
+                    }
+                }
+                break;  // plane can't be on multiple beacons
+            }
+        }
+    }
     return false;
 }
 

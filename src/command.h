@@ -17,14 +17,16 @@ typedef struct treeNode_t {
 
 extern TreeNode commands;
 extern callback delayedCmd;
+extern char delayedExtra;
 TreeNode getDelayTree(TreeNode *parent);
 void initializeCommands();
 bool updateCommands(AtcsoData *data);
 
 typedef struct {
-    char plane;
     int which;
     callback func;
+    char plane;
+    char extra;
 } BeaconQueueEvent;
 
 #endif
