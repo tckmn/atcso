@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdarg.h>
+#include <string.h>  // WHY OH WHY is memmove defined in here
 #include "command.h"
 
 #define min(a,b) ((a) < (b) ? (a) : (b))
@@ -82,7 +83,11 @@ bool updateCommands(AtcsoData *data) {
                     if (bqes[i].plane == plane->name && bqes[i].which == bIdx) {
                         // yay! we have an event!
                         (*bqes[i].func)(data, bqes[i].plane, bqes[i].extra);
-                        // TODO remove from bqes
+                        // remove bqe
+                        memmove(bqes + i, bqes + i + 1,
+                                sizeof(BeaconQueueEvent) * (--nBqes - i));
+                        bqes = realloc(bqes, nBqes * sizeof(BeaconQueueEvent));
+                        --i;
                     }
                 }
                 break;  // plane can't be on multiple beacons
