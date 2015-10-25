@@ -63,7 +63,6 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
 
         if (p->targetAltitude > p->altitude) ++p->altitude;
         if (p->targetAltitude < p->altitude) --p->altitude;
-        // TODO check for landing at airport, crashing
 
         if (p->dir != p->targetDir) {
             // how this algorithm works: we want to normalize p->dir to 0, so
@@ -109,6 +108,32 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
                 }
             }
             return true;  // plane didn't hit an exit; game over
+        }
+
+        if (p->altitude == 0) {
+            // we either crashed, or landed
+            int apNum = 0;
+            for (Airport *ap = data->airports; !isNull(ap->xy); ++ap, ++apNum) {
+                if (ap->xy.y == p->xy.y && ap->xy.x == p->xy.x) {
+                    // plane landed (hopefully correctly)
+                    if (p->destType == 'A' && p->dest == apNum) {
+                        if (p->dir == ap->dir) {
+                            // remove plane
+                            memmove(data->planes + pIdx, data->planes + pIdx + 1,
+                                    sizeof(Plane) * (nPlanes - pIdx));
+                            data->planes = realloc(data->planes,
+                                    nPlanes * sizeof(Plane));
+                            p = data->planes + pIdx;
+                            goto exited;
+                        } else {
+                            return true;  // wrong direction; game over
+                        }
+                    } else {
+                        return true;  // wrong airport; game over
+                    }
+                }
+            }
+            return true;  // plane didn't land at an airport; game over
         }
 
         mvwaddch(radarWin, p->xy.y, 2 * p->xy.x, p->name);
