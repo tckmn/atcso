@@ -59,6 +59,22 @@ void turnTo(AtcsoData *data, char plane, char extra) {
     // TODO: error, unknown plane
 }
 
+void circle(AtcsoData *data, char plane, char extra) {
+    for (Plane *p = data->planes; !isNull(p->xy); ++p) {
+        if (p->name == plane) {
+            if (extra == 'l') {
+                p->targetDir = CIRCLE_LEFT;
+                if (p->dir % 2 != 0) ++p->dir;  // we can't rotate 3 times
+            } else {
+                // right is default
+                p->targetDir = CIRCLE_RIGHT;
+                if (p->dir % 2 != 0) --p->dir;
+            }
+        }
+    }
+    // TODO: error, unknown plane
+}
+
 void delayBeacon(AtcsoData *data, char plane, char extra) {
     BeaconQueueEvent bqe = (BeaconQueueEvent) {extra - '0', delayedCmd, plane,
             delayedExtra};
@@ -102,7 +118,7 @@ TreeNode *mkc(int count, ...);
 void setParents(TreeNode *tn);
 
 void initializeCommands() {
-    commands = (TreeNode) {0, "", NULL, mkc(2,
+    commands = (TreeNode) {0, "", NULL, mkc(3,
         (TreeNode) {'a', "altitude", NULL, mkc(3,
             (TreeNode) {'c', "climb", NULL, mkc(1,
                 (TreeNode) {'#', "%c000 feet", altitudeClimb, NULL, 0, NULL}
@@ -121,8 +137,12 @@ void initializeCommands() {
             (TreeNode) {'z', "225 degrees", turnTo, NULL, 0, NULL},
             (TreeNode) {'a', "270 degrees", turnTo, NULL, 0, NULL},
             (TreeNode) {'q', "315 degrees", turnTo, NULL, 0, NULL}
-        ), 8, NULL}
-    ), 2, NULL};
+        ), 8, NULL},
+        (TreeNode) {'c', "circle", circle, mkc(2,
+            (TreeNode) {'r', "right", circle, NULL, 0, NULL},
+            (TreeNode) {'l', "left", circle, NULL, 0, NULL}
+        ), 2, NULL}
+    ), 3, NULL};
 
     delayTree = (TreeNode) {0, "at", NULL, mkc(1,
         (TreeNode) {'b', "beacon", NULL, mkc(1,

@@ -10,7 +10,8 @@ typedef struct { int x; int y; } XY;
 #define isNull(xy) ((xy).x < 0 || (xy).y < 0)
 #define eq(xy1, xy2) ((xy1).x == (xy2).x && (xy1).y == (xy2).y)
 typedef enum { UP, UP_RIGHT, RIGHT, DOWN_RIGHT,
-    DOWN, DOWN_LEFT, LEFT, UP_LEFT } Direction;
+    DOWN, DOWN_LEFT, LEFT, UP_LEFT,
+    CIRCLE_RIGHT, CIRCLE_LEFT } Direction;
 #define dx(dir) ((dir == UP || dir == DOWN) ? 0 : \
         (dir == UP_LEFT || dir == LEFT || dir == DOWN_LEFT) ? -1 : 1)
 #define dy(dir) ((dir == RIGHT || dir == LEFT) ? 0 : \

@@ -82,13 +82,16 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
             // value of p->targetDir is p->targetDir-p->dir modulo 8.
             // unfortunately, in C, % is *remainder*, not modulo. so we had to
             // "manually" implement a specialized version in a #define above.
-            if (negmod((int)p->targetDir - (int)p->dir, 8) <= 4) {
-                // we're turning clockwise
+            bool clockwise;
+            if (p->targetDir == CIRCLE_RIGHT) clockwise = true;
+            else if (p->targetDir == CIRCLE_LEFT) clockwise = false;
+            else clockwise = negmod((int)p->targetDir - (int)p->dir, 8) <= 4;
+
+            if (clockwise) {
                 for (int i = 0; (i < 2) && (p->dir != p->targetDir); ++i) {
                     p->dir = (p->dir + 1) % 8;
                 }
             } else {
-                // going counterclockwise
                 for (int i = 0; (i < 2) && (p->dir != p->targetDir); ++i) {
                     p->dir = negmod((int)p->dir - 1, 8);
                 }
