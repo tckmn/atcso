@@ -142,9 +142,34 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
         continue;
 
         exited:
+        // remove plane
         memmove(data->planes + pIdx, data->planes + pIdx + 1,
                 sizeof(Plane) * (nPlanes - pIdx));
         data->planes = realloc(data->planes, nPlanes * sizeof(Plane));
+
+        // first find what was pointing to that element
+        int pointerIdx;
+        for (int i = 0; i < nPlanes; ++i) {  // does not include "NUL" term.
+            if (data->planesSorted[0] == data->planes + pIdx) {
+                pointerIdx = i;
+                break;
+            }
+        }
+
+        // remove pointer
+        memmove(data->planesSorted + pointerIdx,
+                data->planesSorted + pointerIdx + 1,
+                sizeof(Plane*) * (nPlanes - pointerIdx));
+        data->planesSorted = realloc(data->planesSorted,
+                nPlanes * sizeof(Plane*));
+
+        // shift all pointers after this down one
+        for (int i = 0; i < nPlanes; ++i) {  // includes "NUL" term.
+            if (data->planesSorted[i] > data->planes + pIdx) {
+                --data->planesSorted[i];
+            }
+        }
+
         ++data->score;
         --nPlanes;
         --pIdx;
@@ -167,11 +192,18 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
         Direction entryDir = fromdyx(dy, dx);
         int destIdx = rand() % (nExits + nAirports);
 
+        // add plane
         data->planes = realloc(data->planes, (nPlanes + 2) * sizeof(Plane));
         data->planes[nPlanes] = (Plane) {entryCoords, data->nextLetter, 7, 7,
                 entryDir, entryDir, destIdx >= nExits ? 'A' : 'E',
                 destIdx >= nExits ? destIdx - nExits : destIdx};
         data->planes[nPlanes + 1] = (Plane) {{-1, -1}, 0, 0, 0, 0, 0, 0, 0};
+
+        // add pointer to plane
+        data->planesSorted = realloc(data->planesSorted,
+                (nPlanes + 2) * sizeof(Plane*));
+        data->planesSorted[nPlanes] = data->planes + nPlanes;
+        data->planesSorted[nPlanes + 1] = data->planes + nPlanes + 1;
 
         ++data->nextLetter;
         if (data->nextLetter > 'z') data->nextLetter = 'a';
