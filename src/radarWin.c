@@ -3,7 +3,6 @@
 
 #include "radarWin.h"
 
-#define negmod(n, m) ((n) < 0 ? ((n) + m) : (n))
 #define drawBeacon(b, i) do { \
         mvwaddch(radarWin, (b).y, 2 * (b).x, '*'); \
         waddch(radarWin, '0' + (i)); \

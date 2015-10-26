@@ -24,6 +24,8 @@ typedef enum { UP, UP_RIGHT, RIGHT, DOWN_RIGHT,
             : ((dx == -1) ? LEFT : RIGHT) \
         )
 
+#define negmod(n, m) ((n) < 0 ? ((n) + m) : (n))
+
 struct atcsoData_t;
 
 // types for storing global data

@@ -52,6 +52,10 @@ void turnTo(AtcsoData *data, char plane, char extra) {
                 case 'z': p->targetDir = 5; break;
                 case 'a': p->targetDir = 6; break;
                 case 'q': p->targetDir = 7; break;
+                case 'l': p->targetDir = negmod((int)p->dir - 1, 8); break;
+                case 'r': p->targetDir = (p->dir + 1) % 8; break;
+                case 'L': p->targetDir = negmod((int)p->dir - 2, 8); break;
+                case 'R': p->targetDir = (p->dir + 2) % 8; break;
             }
             return;
         }
@@ -128,7 +132,7 @@ void initializeCommands() {
             ), 1, NULL},
             (TreeNode) {'#', "%c000 feet", altitudeSet, NULL, 0, NULL}
         ), 3, NULL},
-        (TreeNode) {'t', "turn", NULL, mkc(8,
+        (TreeNode) {'t', "turn", NULL, mkc(12,
             (TreeNode) {'w', "0 degrees", turnTo, NULL, 0, NULL},
             (TreeNode) {'e', "45 degrees", turnTo, NULL, 0, NULL},
             (TreeNode) {'d', "90 degrees", turnTo, NULL, 0, NULL},
@@ -136,8 +140,12 @@ void initializeCommands() {
             (TreeNode) {'x', "180 degrees", turnTo, NULL, 0, NULL},
             (TreeNode) {'z', "225 degrees", turnTo, NULL, 0, NULL},
             (TreeNode) {'a', "270 degrees", turnTo, NULL, 0, NULL},
-            (TreeNode) {'q', "315 degrees", turnTo, NULL, 0, NULL}
-        ), 8, NULL},
+            (TreeNode) {'q', "315 degrees", turnTo, NULL, 0, NULL},
+            (TreeNode) {'l', "left", turnTo, NULL, 0, NULL},
+            (TreeNode) {'r', "right", turnTo, NULL, 0, NULL},
+            (TreeNode) {'L', "hard left", turnTo, NULL, 0, NULL},
+            (TreeNode) {'R', "hard right", turnTo, NULL, 0, NULL}
+        ), 12, NULL},
         (TreeNode) {'c', "circle", circle, mkc(2,
             (TreeNode) {'r', "right", circle, NULL, 0, NULL},
             (TreeNode) {'l', "left", circle, NULL, 0, NULL}
