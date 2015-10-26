@@ -214,6 +214,20 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
         waddch(radarWin, '0' + data->planes[nPlanes].altitude);
 
         data->newPlaneCounter -= data->newPlaneRate;
+        ++nPlanes;
+    }
+
+    // re-sort planesSorted and determine any collisions
+    // we use insertion sort here because planesSorted is already almost fully
+    //   sorted. a quicksort would be slower.
+    for (int i = 1; i < nPlanes - 1; ++i) {
+        int j = i;
+        int tmp = data->planesSorted[j];
+        for (; j > 0 && (data->planes[tmp].xy.x <
+                    data->planes[data->planesSorted[j - 1]].xy.x); --j) {
+            data->planesSorted[j] = data->planesSorted[j - 1];
+        }
+        data->planesSorted[j] = tmp;
     }
 
     wrefresh(radarWin);
