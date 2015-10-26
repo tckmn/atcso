@@ -236,7 +236,10 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
         for (int j = i + 1; j < nPlanes - 1; ++j) {
             Plane *p2 = data->planes + data->planesSorted[j];
             if (p1->xy.x >= (p2->xy.x - 1)) {
-                // TODO determine collision
+                if (abs(p1->xy.y - p2->xy.y) <= 1 &&
+                        abs(p1->altitude - p2->altitude) <= 1) {
+                    return true;  // collision!
+                }
             } else break;
         }
     }
