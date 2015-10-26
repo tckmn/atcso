@@ -150,7 +150,7 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
         // first find what index that element had in planesSorted
         int sortedIdx;
         for (int i = 0; i < nPlanes; ++i) {  // does not include "NUL" term.
-            if (data->planesSorted[0] == pIdx) {
+            if (data->planesSorted[i] == pIdx) {
                 sortedIdx = i;
                 break;
             }
