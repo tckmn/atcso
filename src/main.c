@@ -60,8 +60,8 @@ void mainloop() {
     data.planes = malloc(1 * sizeof(Plane));
     data.planes[0] = (Plane) {{-1, -1}, 0, 0, 0, 0, 0, 0, 0};
 
-    data.planesSorted = malloc(1 * sizeof(Plane*));
-    data.planesSorted[0] = data.planes;
+    data.planesSorted = malloc(1 * sizeof(int));
+    data.planesSorted[0] = 0;
 
     data.tickDelay = 1;
     data.newPlaneRate = 5;

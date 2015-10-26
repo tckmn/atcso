@@ -58,7 +58,7 @@ typedef struct atcsoData_t {
     XY *beacons;
     Airport *airports;
     Plane *planes;
-    Plane **planesSorted;
+    int *planesSorted;
 
     int tickDelay;
     double newPlaneRate;

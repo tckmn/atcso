@@ -147,25 +147,25 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
                 sizeof(Plane) * (nPlanes - pIdx));
         data->planes = realloc(data->planes, nPlanes * sizeof(Plane));
 
-        // first find what was pointing to that element
-        int pointerIdx;
+        // first find what index that element had in planesSorted
+        int sortedIdx;
         for (int i = 0; i < nPlanes; ++i) {  // does not include "NUL" term.
-            if (data->planesSorted[0] == data->planes + pIdx) {
-                pointerIdx = i;
+            if (data->planesSorted[0] == pIdx) {
+                sortedIdx = i;
                 break;
             }
         }
 
-        // remove pointer
-        memmove(data->planesSorted + pointerIdx,
-                data->planesSorted + pointerIdx + 1,
-                sizeof(Plane*) * (nPlanes - pointerIdx));
+        // remove index
+        memmove(data->planesSorted + sortedIdx,
+                data->planesSorted + sortedIdx + 1,
+                sizeof(int) * (nPlanes - sortedIdx));
         data->planesSorted = realloc(data->planesSorted,
-                nPlanes * sizeof(Plane*));
+                nPlanes * sizeof(int));
 
-        // shift all pointers after this down one
+        // shift all indeces after this down one
         for (int i = 0; i < nPlanes; ++i) {  // includes "NUL" term.
-            if (data->planesSorted[i] > data->planes + pIdx) {
+            if (data->planesSorted[i] > pIdx) {
                 --data->planesSorted[i];
             }
         }
@@ -199,11 +199,11 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
                 destIdx >= nExits ? destIdx - nExits : destIdx};
         data->planes[nPlanes + 1] = (Plane) {{-1, -1}, 0, 0, 0, 0, 0, 0, 0};
 
-        // add pointer to plane
+        // add index of plane (we'll re-sort later)
         data->planesSorted = realloc(data->planesSorted,
-                (nPlanes + 2) * sizeof(Plane*));
-        data->planesSorted[nPlanes] = data->planes + nPlanes;
-        data->planesSorted[nPlanes + 1] = data->planes + nPlanes + 1;
+                (nPlanes + 2) * sizeof(int));
+        data->planesSorted[nPlanes] = nPlanes;
+        data->planesSorted[nPlanes + 1] = nPlanes + 1;
 
         ++data->nextLetter;
         if (data->nextLetter > 'z') data->nextLetter = 'a';
