@@ -217,10 +217,12 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
         ++nPlanes;
     }
 
+    wrefresh(radarWin);
+
     // re-sort planesSorted to prepare to determine any collisions
     // we use insertion sort here because planesSorted is already almost fully
     //   sorted. a quicksort would be slower.
-    for (int i = 1; i < nPlanes - 1; ++i) {
+    for (int i = 1; i < nPlanes; ++i) {
         int j = i;
         int tmp = data->planesSorted[j];
         for (; j > 0 && (data->planes[tmp].xy.x <
@@ -231,9 +233,9 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
     }
 
     // find collisions between planes using planesSorted
-    for (int i = 0; i < nPlanes - 2; ++i) {
+    for (int i = 0; i < nPlanes - 1; ++i) {
         Plane *p1 = data->planes + data->planesSorted[i];
-        for (int j = i + 1; j < nPlanes - 1; ++j) {
+        for (int j = i + 1; j < nPlanes; ++j) {
             Plane *p2 = data->planes + data->planesSorted[j];
             if (p1->xy.x >= (p2->xy.x - 1)) {
                 if (abs(p1->xy.y - p2->xy.y) <= 1 &&
@@ -243,8 +245,6 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
             } else break;
         }
     }
-
-    wrefresh(radarWin);
 
     return false;
 }
