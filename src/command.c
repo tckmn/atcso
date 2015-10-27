@@ -112,6 +112,22 @@ void turnTowardsExit(AtcsoData *data, char plane, char extra) {
     // TODO: error, unknown plane
 }
 
+void turnTowardsAirport(AtcsoData *data, char plane, char extra) {
+    for (Plane *p = data->planes; !isNull(p->xy); ++p) {
+        if (p->name == plane) {
+            int i = 0;
+            for (Airport *a = data->airports; !isNull(a->xy); ++a, ++i) {
+                if (i == (extra - '0')) {
+                    p->targetDir = getDir(p->xy, a->xy);
+                    break;
+                }
+            }
+            return;
+        }
+    }
+    // TODO: error, unknown plane
+}
+
 void circle(AtcsoData *data, char plane, char extra) {
     for (Plane *p = data->planes; !isNull(p->xy); ++p) {
         if (p->name == plane) {
@@ -194,14 +210,17 @@ void initializeCommands() {
             (TreeNode) {'r', "right", turnTo, NULL, 0, NULL},
             (TreeNode) {'L', "hard left", turnTo, NULL, 0, NULL},
             (TreeNode) {'R', "hard right", turnTo, NULL, 0, NULL},
-            (TreeNode) {'t', "towards", NULL, mkc(2,
+            (TreeNode) {'t', "towards", NULL, mkc(3,
                 (TreeNode) {'b', "beacon", NULL, mkc(1,
                     (TreeNode) {'#', "%c", turnTowardsBeacon, NULL, 0, NULL}
                 ), 1, NULL},
                 (TreeNode) {'e', "exit", NULL, mkc(1,
                     (TreeNode) {'#', "%c", turnTowardsExit, NULL, 0, NULL}
+                ), 1, NULL},
+                (TreeNode) {'a', "airport", NULL, mkc(1,
+                    (TreeNode) {'#', "%c", turnTowardsAirport, NULL, 0, NULL}
                 ), 1, NULL}
-            ), 2, NULL}
+            ), 3, NULL}
         ), 13, NULL},
         (TreeNode) {'c', "circle", circle, mkc(2,
             (TreeNode) {'r', "right", circle, NULL, 0, NULL},
