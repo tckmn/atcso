@@ -6,14 +6,14 @@
 #define min(a,b) ((a) < (b) ? (a) : (b))
 #define max(a,b) ((a) > (b) ? (a) : (b))
 Direction getDir(XY a, XY b) {
-    if (a.x == b.x) return (a.y < b.y) ? UP : DOWN;
+    if (a.x == b.x) return (a.y < b.y) ? DOWN : UP;
     double slope = (double)(b.y - a.y) / (b.x - a.x);
     if (a.x < b.x) {
-        if (slope > 2.414214) return UP; // tan(67.5deg), between 90 and 45
-        else if (slope > 0.414214) return UP_RIGHT; // tan(22.2deg)
+        if (slope > 2.414214) return DOWN; // tan(67.5deg), between 90 and 45
+        else if (slope > 0.414214) return DOWN_RIGHT; // tan(22.2deg)
         else if (slope > -0.414214) return RIGHT; // duh
-        else if (slope > -2.414214) return DOWN_RIGHT;
-        else return DOWN;
+        else if (slope > -2.414214) return UP_RIGHT;
+        else return UP;
     } else {
         if (slope > 2.414214) return UP;
         else if (slope > 0.414214) return UP_LEFT;
