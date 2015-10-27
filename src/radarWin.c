@@ -139,8 +139,10 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
             return true;  // plane didn't land at an airport; game over
         }
 
+        wattron(radarWin, A_REVERSE);
         mvwaddch(radarWin, p->xy.y, 2 * p->xy.x, p->name);
         waddch(radarWin, '0' + p->altitude);
+        wattroff(radarWin, A_REVERSE);
         continue;
 
         exited:
@@ -210,10 +212,12 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
         ++data->nextLetter;
         if (data->nextLetter > 'z') data->nextLetter = 'a';
 
+        wattron(radarWin, A_REVERSE);
         mvwaddch(radarWin, data->planes[nPlanes].xy.y,
                 2 * data->planes[nPlanes].xy.x,
                 data->planes[nPlanes].name);
         waddch(radarWin, '0' + data->planes[nPlanes].altitude);
+        wattroff(radarWin, A_REVERSE);
 
         data->newPlaneCounter -= data->newPlaneRate;
         ++nPlanes;
