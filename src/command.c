@@ -5,6 +5,23 @@
 
 #define min(a,b) ((a) < (b) ? (a) : (b))
 #define max(a,b) ((a) > (b) ? (a) : (b))
+Direction getDir(XY a, XY b) {
+    if (a.x == b.x) return (a.y < b.y) ? UP : DOWN;
+    double slope = (double)(b.y - a.y) / (b.x - a.x);
+    if (a.x < b.x) {
+        if (slope > 2.414214) return UP; // tan(67.5deg), between 90 and 45
+        else if (slope > 0.414214) return UP_RIGHT; // tan(22.2deg)
+        else if (slope > -0.414214) return RIGHT; // duh
+        else if (slope > -2.414214) return DOWN_RIGHT;
+        else return DOWN;
+    } else {
+        if (slope > 2.414214) return UP;
+        else if (slope > 0.414214) return UP_LEFT;
+        else if (slope > -0.414214) return LEFT;
+        else if (slope > -2.414214) return DOWN_LEFT;
+        else return DOWN;
+    }
+}
 
 TreeNode commands, delayTree;
 callback delayedCmd = NULL;
@@ -56,6 +73,22 @@ void turnTo(AtcsoData *data, char plane, char extra) {
                 case 'r': p->targetDir = (p->dir + 1) % 8; break;
                 case 'L': p->targetDir = negmod((int)p->dir - 2, 8); break;
                 case 'R': p->targetDir = (p->dir + 2) % 8; break;
+            }
+            return;
+        }
+    }
+    // TODO: error, unknown plane
+}
+
+void turnTowardsBeacon(AtcsoData *data, char plane, char extra) {
+    for (Plane *p = data->planes; !isNull(p->xy); ++p) {
+        if (p->name == plane) {
+            int i = 0;
+            for (XY *b = data->beacons; !isNull(*b); ++b, ++i) {
+                if (i == (extra - '0')) {
+                    p->targetDir = getDir(p->xy, *b);
+                    break;
+                }
             }
             return;
         }
@@ -132,7 +165,7 @@ void initializeCommands() {
             ), 1, NULL},
             (TreeNode) {'#', "%c000 feet", altitudeSet, NULL, 0, NULL}
         ), 3, NULL},
-        (TreeNode) {'t', "turn", NULL, mkc(12,
+        (TreeNode) {'t', "turn", NULL, mkc(13,
             (TreeNode) {'w', "0 degrees", turnTo, NULL, 0, NULL},
             (TreeNode) {'e', "45 degrees", turnTo, NULL, 0, NULL},
             (TreeNode) {'d', "90 degrees", turnTo, NULL, 0, NULL},
@@ -144,8 +177,13 @@ void initializeCommands() {
             (TreeNode) {'l', "left", turnTo, NULL, 0, NULL},
             (TreeNode) {'r', "right", turnTo, NULL, 0, NULL},
             (TreeNode) {'L', "hard left", turnTo, NULL, 0, NULL},
-            (TreeNode) {'R', "hard right", turnTo, NULL, 0, NULL}
-        ), 12, NULL},
+            (TreeNode) {'R', "hard right", turnTo, NULL, 0, NULL},
+            (TreeNode) {'t', "towards", NULL, mkc(1,
+                (TreeNode) {'b', "beacon", NULL, mkc(1,
+                    (TreeNode) {'#', "%c", turnTowardsBeacon, NULL, 0, NULL}
+                ), 1, NULL}
+            ), 1, NULL}
+        ), 13, NULL},
         (TreeNode) {'c', "circle", circle, mkc(2,
             (TreeNode) {'r', "right", circle, NULL, 0, NULL},
             (TreeNode) {'l', "left", circle, NULL, 0, NULL}
