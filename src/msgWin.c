@@ -1,5 +1,6 @@
 #include "msgWin.h"
 
+
 /**
  * Creates the message window, the one on the bottom that shows messages to the
  * user, and also is where the user types input.
@@ -12,10 +13,13 @@ WINDOW *createMsgWin(AtcsoData *data) {
     return msgWin;
 }
 
+
 /**
- * Update and refresh the message window.
+ * Updates and refreshes the message window.
  */
 bool updateMsgWin(AtcsoData *data, WINDOW *msgWin) {
+    // nothing to do here...
+
     wrefresh(msgWin);
 
     return false;

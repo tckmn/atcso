@@ -3,8 +3,21 @@
 #include <string.h>  // WHY OH WHY is memmove defined in here
 #include "command.h"
 
+
 #define min(a,b) ((a) < (b) ? (a) : (b))
 #define max(a,b) ((a) > (b) ? (a) : (b))
+
+
+/**
+ * In order to avoid bringing in trig fuctions, we hardcode the tangents of
+ * certain values here. Here's how it works: if we find the slope between the
+ * two XYs, we then have all the information we need to get the *angle* between
+ * them: it's simply atan(slope) with a few sign complications.
+ *
+ * But we don't need to bring in an entire math lib when we can just hardcode a
+ * few *key values*---precaluclated slopes that have a known angle. Since we
+ * only need to be accurate to the nearest 45 degrees, this is sufficient.
+ */
 Direction getDir(XY a, XY b) {
     if (a.x == b.x) return (a.y < b.y) ? DOWN : UP;
     double slope = (double)(b.y - a.y) / (b.x - a.x);
@@ -23,9 +36,11 @@ Direction getDir(XY a, XY b) {
     }
 }
 
+
 TreeNode commands, delayTree;
 callback delayedCmd = NULL;
 char delayedExtra = 0;
+
 
 void altitudeClimb(AtcsoData *data, char plane, char extra) {
     for (Plane *p = data->planes; !isNull(p->xy); ++p) {
@@ -37,6 +52,7 @@ void altitudeClimb(AtcsoData *data, char plane, char extra) {
     // TODO: error, unknown plane
 }
 
+
 void altitudeDescend(AtcsoData *data, char plane, char extra) {
     for (Plane *p = data->planes; !isNull(p->xy); ++p) {
         if (p->name == plane) {
@@ -47,6 +63,7 @@ void altitudeDescend(AtcsoData *data, char plane, char extra) {
     // TODO: error, unknown plane
 }
 
+
 void altitudeSet(AtcsoData *data, char plane, char extra) {
     for (Plane *p = data->planes; !isNull(p->xy); ++p) {
         if (p->name == plane) {
@@ -56,6 +73,7 @@ void altitudeSet(AtcsoData *data, char plane, char extra) {
     }
     // TODO: error, unknown plane
 }
+
 
 void turnTo(AtcsoData *data, char plane, char extra) {
     for (Plane *p = data->planes; !isNull(p->xy); ++p) {
@@ -80,6 +98,7 @@ void turnTo(AtcsoData *data, char plane, char extra) {
     // TODO: error, unknown plane
 }
 
+
 void turnTowardsBeacon(AtcsoData *data, char plane, char extra) {
     for (Plane *p = data->planes; !isNull(p->xy); ++p) {
         if (p->name == plane) {
@@ -95,6 +114,7 @@ void turnTowardsBeacon(AtcsoData *data, char plane, char extra) {
     }
     // TODO: error, unknown plane
 }
+
 
 void turnTowardsExit(AtcsoData *data, char plane, char extra) {
     for (Plane *p = data->planes; !isNull(p->xy); ++p) {
@@ -112,6 +132,7 @@ void turnTowardsExit(AtcsoData *data, char plane, char extra) {
     // TODO: error, unknown plane
 }
 
+
 void turnTowardsAirport(AtcsoData *data, char plane, char extra) {
     for (Plane *p = data->planes; !isNull(p->xy); ++p) {
         if (p->name == plane) {
@@ -127,6 +148,7 @@ void turnTowardsAirport(AtcsoData *data, char plane, char extra) {
     }
     // TODO: error, unknown plane
 }
+
 
 void circle(AtcsoData *data, char plane, char extra) {
     for (Plane *p = data->planes; !isNull(p->xy); ++p) {
@@ -144,6 +166,7 @@ void circle(AtcsoData *data, char plane, char extra) {
     // TODO: error, unknown plane
 }
 
+
 void delayBeacon(AtcsoData *data, char plane, char extra) {
     BeaconQueueEvent bqe = (BeaconQueueEvent) {extra - '0', delayedCmd, plane,
             delayedExtra};
@@ -151,6 +174,10 @@ void delayBeacon(AtcsoData *data, char plane, char extra) {
     data->bqes[data->nBqes - 1] = bqe;
 }
 
+
+/**
+ * This is called exactly once every "tick" to handle queued events.
+ */
 bool updateCommands(AtcsoData *data) {
     // # beacons < # bqe's < # planes
     // therefore, the outer loop (the one run the fewest times) should loop
@@ -183,9 +210,16 @@ bool updateCommands(AtcsoData *data) {
     return false;
 }
 
+
 TreeNode *mkc(int count, ...);
 void setParents(TreeNode *tn);
 
+
+/**
+ * This functions is expected to be called exactly once at the very beginning
+ * of the program. It initializes the (from here on, constant) data in the
+ * `commands' and `delayTree' variables.
+ */
 void initializeCommands() {
     commands = (TreeNode) {0, "", NULL, mkc(3,
         (TreeNode) {'a', "altitude", NULL, mkc(3,
@@ -239,10 +273,12 @@ void initializeCommands() {
     setParents(&delayTree);
 }
 
+
 TreeNode *getDelayTree(TreeNode *parent) {
     delayTree.parent = parent;
     return &delayTree;
 }
+
 
 TreeNode *mkc(int count, ...) {
     TreeNode *a = malloc(count * sizeof(TreeNode));
@@ -256,6 +292,7 @@ TreeNode *mkc(int count, ...) {
     va_end(args);
     return a;
 }
+
 
 void setParents(TreeNode *tn) {
     for (int i = 0; i < tn->nChildren; ++i) {

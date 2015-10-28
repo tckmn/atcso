@@ -1,7 +1,5 @@
 #include <stdlib.h>
 #include <time.h>
-
-
 #include "radarWin.h"
 #include "msgWin.h"
 #include "infoWin.h"
@@ -17,17 +15,18 @@ void mainloop();
  */
 int main(int argc, char **argv) {
     initscr();
-    raw();                  // Disable line buffering
-    noecho();               // Don't show things the user is typing
-    nodelay(stdscr, TRUE);  // Non-blocking getch()
-    srand(time(NULL));      // Seed RNG
+    raw();                  // disable line buffering
+    noecho();               // don't show things the user is typing
+    nodelay(stdscr, TRUE);  // non-blocking getch()
+    srand(time(NULL));      // seed RNG
     initializeCommands();   // duh
 
-    mainloop();             // Start the game!
+    mainloop();             // start the game!
 
     endwin();
     return EXIT_SUCCESS;
 }
+
 
 /**
  * The main loop: runs infinitely until the game is ended.
@@ -100,7 +99,7 @@ void mainloop() {
         }
 
         if ((ch = getch()) != ERR) {
-            if (ch == 3) goto cleanup;  // Ctrl+C
+            if (ch == 3) goto cleanup;  // ctrl+c
             else {
                 // let input.c handle it
                 handleInput(ch, &data, msgWin);

@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <string.h>  // WHY OH WHY is memmove defined in here
-
 #include "radarWin.h"
+
 
 #define drawBeacon(b, i) do { \
         mvwaddch(radarWin, (b).y, 2 * (b).x, '*'); \
@@ -11,6 +11,7 @@
         mvwaddch(radarWin, (a).xy.y, 2 * (a).xy.x, "^_>_v_<_"[(a).dir]); \
         waddch(radarWin, '0' + (i)); \
     } while (0)
+
 
 /**
  * Creates the radar window, the biggest one that has all the planes and stuff.
@@ -52,12 +53,14 @@ WINDOW *createRadarWin(AtcsoData *data) {
     return radarWin;
 }
 
+
 /**
- * Update and refresh the radar window.
+ * Updates and refreshes the radar window.
  */
 bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
     int nPlanes = 0;
     for (Plane *p = data->planes; !isNull(p->xy); ++p, ++nPlanes) {
+        // redraw whatever the plane just flew over
         mvwaddstr(radarWin, p->xy.y, 2 * p->xy.x, ". ");
         int bIdx = 0;
         for (XY *b = data->beacons; !isNull(*b); ++b, ++bIdx) {
@@ -71,9 +74,11 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
 
     int pIdx = 0;
     for (Plane *p = data->planes; !isNull(p->xy); ++p, ++pIdx) {
+        // update altitidue
         if (p->targetAltitude > p->altitude) ++p->altitude;
         if (p->targetAltitude < p->altitude) --p->altitude;
 
+        // update direction
         if (p->dir != p->targetDir) {
             // how this algorithm works: we want to normalize p->dir to 0, so
             // we can compare it to p->targetDir without "wrap-around." to
@@ -97,11 +102,12 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
             }
         }
 
+        // update position
         p->xy.y += dy(p->dir);
         p->xy.x += dx(p->dir);
 
+        // did the plane exit/crash?
         if (p->xy.y == 0 || p->xy.y == 20 || p->xy.x == 0 || p->xy.x == 29) {
-            // the plane either exited or crashed
             if (p->altitude != 9) return true;  // game over
             int exitNum = 0;
             for (XY *exit = data->exits; !isNull(*exit); ++exit, ++exitNum) {
@@ -118,8 +124,8 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
             return true;  // plane didn't hit an exit; game over
         }
 
+        // did the plane crash/land?
         if (p->altitude == 0) {
-            // we either crashed, or landed
             int apNum = 0;
             for (Airport *ap = data->airports; !isNull(ap->xy); ++ap, ++apNum) {
                 if (eq(ap->xy, p->xy)) {
@@ -139,6 +145,7 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
             return true;  // plane didn't land at an airport; game over
         }
 
+        // draw the plane
         wattron(radarWin, A_REVERSE);
         mvwaddch(radarWin, p->xy.y, 2 * p->xy.x, p->name);
         waddch(radarWin, '0' + p->altitude);
@@ -180,6 +187,7 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
         p = data->planes + pIdx;
     }
 
+    // do we create a new plane?
     data->newPlaneCounter += (double)rand() / RAND_MAX;
     if (data->newPlaneCounter > data->newPlaneRate) {
         int nExits = 0;
@@ -187,6 +195,7 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
         int nAirports = 0;
         for (Airport *ap = data->airports; !isNull(ap->xy); ++ap, ++nAirports);
 
+        // determine entry and destination
         XY entryCoords = data->exits[rand() % nExits];
         int dy = 0, dx = 0;
         if (entryCoords.y == 0)  { entryCoords.y = 1;  dy = 1;  }
@@ -212,6 +221,7 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
         ++data->nextLetter;
         if (data->nextLetter > 'z') data->nextLetter = 'a';
 
+        // draw the plane
         wattron(radarWin, A_REVERSE);
         mvwaddch(radarWin, data->planes[nPlanes].xy.y,
                 2 * data->planes[nPlanes].xy.x,
@@ -219,10 +229,13 @@ bool updateRadarWin(AtcsoData *data, WINDOW *radarWin) {
         waddch(radarWin, '0' + data->planes[nPlanes].altitude);
         wattroff(radarWin, A_REVERSE);
 
+        // update counters
         data->newPlaneCounter -= data->newPlaneRate;
         ++nPlanes;
     }
 
+    // refresh before doing collision detection so that user can actually see
+    // what collided
     wrefresh(radarWin);
 
     // re-sort planesSorted to prepare to determine any collisions
